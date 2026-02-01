@@ -1,0 +1,101 @@
+@import "tailwindcss";
+
+:root {
+  /* --- LIGHT MODE VARIABLES --- */
+  --brand-dark: #0f172a;
+  --brand-primary: #012e1b;
+  --brand-active: #012e1b;
+  --brand-accent: #cc9328;
+  --brand-warm: #ffffff;
+  --foreground: #334155;
+  --border-color: #e2e8f0;
+}
+
+/* AUTOMATIC SYSTEM THEME SWITCH */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --brand-dark: #ffffff; /* Pure White Headers */
+    --brand-primary: #011f13; /* Vibrant Green Accents */
+    --brand-active: #fbbf24;
+    --brand-accent: #fbbf24; /* Amber Gold */
+    --brand-warm: #011f13; /* Deeper Forest Background */
+    --foreground: #ffffff; /* Pure White Text for Contrast */
+    --border-color: #053d26; /* Deep Forest Borders */
+  }
+}
+
+@theme inline {
+  --color-brand-dark: var(--brand-dark);
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-active: var(--brand-active);
+  --color-brand-accent: var(--brand-accent);
+  --color-brand-warm: var(--brand-warm);
+  --color-foreground: var(--foreground);
+  --color-border: var(--border-color);
+
+  --font-syne: var(--font-syne);
+  --font-jakarta: var(--font-jakarta);
+}
+
+/* --- GLOBAL STYLES --- */
+body {
+  background-color: var(--brand-warm);
+  color: var(--foreground);
+  font-family: var(--font-jakarta), sans-serif;
+  line-height: 1.6;
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+h1,
+h2,
+h3,
+h4,
+.font-heading {
+  font-family: var(--font-syne), sans-serif;
+  color: var(
+    --brand-dark
+  ) !important; /* Will be White in dark mode, Charcoal in light */
+  font-weight: 700;
+  letter-spacing: -0.04em;
+}
+
+* {
+  border-color: var(--border-color);
+}
+
+/* Add this to your globals.css */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fadeUp 1s forwards;
+}
+
+/* --- INFINITE MARQUEE ANIMATION --- */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 40s linear infinite;
+}
+
+/* Pause on hover for readability */
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
