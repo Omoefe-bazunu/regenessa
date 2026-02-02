@@ -1,15 +1,19 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  /* config options here */
   reactCompiler: true,
-
   images: {
     remotePatterns: [
       {
         protocol: "https",
+        hostname: "**.unsplash.com", // Catch all Unsplash subdomains
+      },
+      {
+        protocol: "https",
         hostname: "firebasestorage.googleapis.com",
-        port: "",
-        pathname: "/v0/b/**",
+      },
+      {
+        protocol: "https",
+        hostname: "storage.googleapis.com",
       },
     ],
   },

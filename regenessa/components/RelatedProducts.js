@@ -1,68 +1,80 @@
 "use client";
-import { useState, useEffect } from "react";
-import api from "@/lib/api";
+import React, { useState, useEffect } from "react";
 import ProductCard from "./productCard";
-import { Loader2, PackageSearch } from "lucide-react";
+import api from "@/lib/api";
+import { Dna, Loader2 } from "lucide-react";
 
-export default function RelatedProducts({ currentCategory, currentProductId }) {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+const RelatedProducts = ({ currentCategory, currentProductId }) => {
+  const [related, setRelated] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    // GATEKEEPER: Don't fetch if category is missing or hasn't loaded yet
+    if (!currentCategory || currentCategory === "") return;
+
     const fetchRelated = async () => {
       try {
-        // Fetch all products
-        const { data } = await api.get("/products");
+        setLoading(true);
 
-        // Filter: Same category, but NOT the current product
-        const filtered = data.filter(
-          (p) => p.category === currentCategory && p.id !== currentProductId,
-        );
+        // Ensure the category is encoded properly for the URL
+        const encodedCategory = encodeURIComponent(currentCategory);
+        const { data } = await api.get(`/products?category=${encodedCategory}`);
 
-        // Limit to top 4 related items
-        setProducts(filtered.slice(0, 4));
+        if (Array.isArray(data)) {
+          const filtered = data
+            .filter((p) => p.id !== currentProductId)
+            .slice(0, 3);
+          setRelated(filtered);
+        }
       } catch (err) {
-        console.error("Error fetching related products:", err);
+        // This will now catch the error without crashing the UI
+        console.error(
+          "Related products fetch failed:",
+          err.response?.data || err.message,
+        );
       } finally {
         setLoading(false);
       }
     };
 
-    if (currentCategory) {
-      fetchRelated();
-    }
-  }, [currentCategory, currentProductId]);
+    fetchRelated();
+  }, [currentCategory, currentProductId]); // Dependencies
 
-  if (loading) {
-    return (
-      <div className="flex justify-center py-20">
-        <Loader2 className="animate-spin text-brand-primary" size={32} />
-      </div>
-    );
-  }
-
-  if (products.length === 0) return null;
+  // Render nothing if there's no data and we aren't loading
+  if (!loading && related.length === 0) return null;
 
   return (
-    <section className="mt-12 border-t border-gray-200 pt-8">
-      <div className="flex items-center justify-between mb-12">
-        <div>
-          <h3 className="font-heading text-3xl text-brand-dark dark:text-white">
-            You might also <span className="text-brand-primary">need.</span>
-          </h3>
-          <p className="text-foreground/40 text-sm mt-2 font-bold uppercase tracking-widest">
-            More from {currentCategory}
-          </p>
+    <section className="mt-32 pt-24 border-t border-brand-dark/5">
+      <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
+        <div className="max-w-xl">
+          <div className="flex items-center gap-3 mb-4">
+            <Dna className="text-brand-primary opacity-50" size={20} />
+            <span className="font-jakarta text-[11px] font-black uppercase tracking-[0.4em] text-brand-accent block">
+              Synergistic Care
+            </span>
+          </div>
+          <h2 className="font-syne text-3xl md:text-4xl font-bold text-brand-dark leading-[1.1]">
+            Complementary <br /> Clinical Regimens.
+          </h2>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-        {products.map((product) => (
-          <div key={product.id} className="animate-fade-in">
-            <ProductCard product={product} />
-          </div>
-        ))}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 justify-items-start">
+        {loading
+          ? [...Array(3)].map((_, i) => (
+              <div
+                key={i}
+                className="h-[400px] w-full bg-brand-dark/5 animate-pulse rounded-sm"
+              />
+            ))
+          : related.map((product) => (
+              <div key={product.id} className="w-full animate-grid-item">
+                <ProductCard product={product} />
+              </div>
+            ))}
       </div>
     </section>
   );
-}
+};
+
+export default RelatedProducts;

@@ -13,16 +13,11 @@ const ProductSection = () => {
     const fetchProducts = async () => {
       try {
         setIsLoading(true);
-        // Using the api instance with interceptors and base URL
         const response = await api.get("/products");
-
-        // Firestore map in your controller returns a direct array
-        console.log("Regenessa API Response:", response.data);
 
         if (Array.isArray(response.data)) {
           setProducts(response.data);
         } else {
-          console.warn("Expected array but received:", typeof response.data);
           setProducts([]);
         }
       } catch (err) {
@@ -37,15 +32,15 @@ const ProductSection = () => {
   }, []);
 
   return (
-    <section className="bg-section-offset py-12 px-6 md:px-24">
+    <section className="bg-brand-section py-12 px-6 md:px-24">
       <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
           <div className="max-w-xl">
-            <span className="font-jakarta text-[11px] font-black uppercase tracking-[0.4em] text-brand-accent mb-4 block">
+            <span className="font-jakarta text-[11px] font-black uppercase tracking-[0.4em] text-brand-accent block">
               Regenessa Solutions
             </span>
             <h2 className="font-syne text-3xl md:text-4xl font-bold text-brand-dark mb-6 leading-[1.1]">
-              Clinical Formulations for <br /> Cellular Longevity.
+              Natural Supplements for <br /> Cellular Longevity.
             </h2>
           </div>
 
@@ -59,27 +54,34 @@ const ProductSection = () => {
           </Link>
         </div>
 
-        {/* LOADING SHIMMER OR GRID */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* GRID ADJUSTMENT: 
+           - Removed 'mx-auto' from cards via the grid alignment.
+           - Ensure grid items start from the leading edge.
+        */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 justify-items-start">
           {isLoading ? (
-            [...Array(4)].map((_, i) => (
+            [...Array(6)].map((_, i) => (
               <div
                 key={i}
-                className="h-[400px] bg-foreground/5 animate-pulse rounded-sm"
+                className="h-[400px] w-full bg-foreground/5 animate-pulse rounded-sm"
               />
             ))
           ) : error ? (
-            <div className="col-span-full py-20 text-center border border-dashed border-red-200 bg-red-50 rounded-sm">
+            <div className="col-span-full py-20 text-left border border-dashed border-red-200 bg-red-50 rounded-sm px-6">
               <p className="font-jakarta text-xs text-red-500 uppercase tracking-widest">
                 System Error: {error}
               </p>
             </div>
           ) : products.length > 0 ? (
-            products.map((item) => <ProductCard key={item.id} product={item} />)
+            products.slice(0, 6).map((item) => (
+              <div key={item.id} className="w-full">
+                <ProductCard product={item} />
+              </div>
+            ))
           ) : (
-            <div className="col-span-full py-20 text-center border border-dashed border-foreground/10">
+            <div className="col-span-full py-20 text-left border border-dashed border-foreground/10 px-6">
               <p className="font-jakarta text-sm text-foreground/40 uppercase tracking-widest">
-                No clinical formulations found.
+                No products found.
               </p>
             </div>
           )}

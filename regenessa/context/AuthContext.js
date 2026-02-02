@@ -15,7 +15,7 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const router = useRouter();
 
-  // 1. Lazy Initialization
+  // 1. Lazy Initialization - Load user from localStorage on client only
   const [user, setUser] = useState(() => {
     if (typeof window !== "undefined") {
       const savedUser = localStorage.getItem("user");
@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }) => {
 
   const [loading, setLoading] = useState(true);
 
-  // 2. Declare Logout FIRST (Move it up here)
+  // 2. Declare logout FIRST
   const logout = useCallback(() => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -36,16 +36,18 @@ export const AuthProvider = ({ children }) => {
     router.push("/login");
   }, [router]);
 
-  // 3. Now useEffect can safely call logout
+  // 3. Verify session on mount
   useEffect(() => {
     const verifySession = async () => {
       const token = localStorage.getItem("token");
       if (token) {
         try {
-          // You could optionally call an /api/auth/me here to verify token validity
+          // Optional: Verify token with backend
+          // const { data } = await api.get("/auth/me");
+          // setUser(data.user);
           setLoading(false);
         } catch (err) {
-          logout(); // Now 'logout' is defined and accessible
+          logout();
         }
       } else {
         setLoading(false);
@@ -54,7 +56,6 @@ export const AuthProvider = ({ children }) => {
     verifySession();
   }, [logout]);
 
-  // 4. Other Actions
   const signup = async (fullName, email, password) => {
     try {
       await api.post("/auth/signup", { fullName, email, password });

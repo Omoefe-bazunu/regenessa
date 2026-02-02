@@ -14,28 +14,48 @@ import {
   PhoneCall,
   ChevronRight,
   Menu,
+  LogOut,
 } from "lucide-react";
 
 export default function Navbar() {
   const pathname = usePathname();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const { cartCount } = useCart();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
+  // Avoid Hydration Mismatch
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 40);
-    };
+    const frame = requestAnimationFrame(() => {
+      setMounted(true);
+    });
 
+    const handleScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
+  // Lock body scroll when menu is open
   useEffect(() => {
-    document.body.style.overflow = isMenuOpen ? "hidden" : "unset";
+    if (typeof document !== "undefined") {
+      document.body.style.overflow = isMenuOpen ? "hidden" : "unset";
+    }
   }, [isMenuOpen]);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      setIsMenuOpen(false);
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
 
   const navItems = [
     { name: "Home", href: "/", icon: Leaf },
@@ -44,10 +64,14 @@ export default function Navbar() {
     { name: "Contact", href: "/contact", icon: PhoneCall },
   ];
 
+  // Prevent hydration mismatch with placeholder
+  if (!mounted) {
+    return <div className="h-20 bg-brand-warm border-b border-transparent" />;
+  }
+
   return (
     <>
       <header className="sticky top-0 left-0 right-0 z-50 w-full">
-        {/* TOP ANNOUNCEMENT BAR */}
         <div className="hidden lg:flex bg-brand-primary py-2.5 px-26 justify-between items-center border-b border-white/10 relative">
           <p className="text-[10px] font-jakarta font-bold text-white/60 uppercase tracking-[0.25em]">
             Innovating Regenerative Lifestyle Wellness • Clinical Grade
@@ -59,7 +83,6 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* MAIN NAVBAR */}
         <div
           className={`transition-all duration-500 bg-brand-warm border-b ${
             scrolled
@@ -99,19 +122,30 @@ export default function Navbar() {
             </nav>
 
             <div className="flex items-center gap-3 md:gap-6">
-              {/* User Icon - Desktop */}
-              <Link
-                href={user ? "/profile" : "/login"}
-                className="hidden lg:block relative group p-1"
-                aria-label={user ? "Profile" : "Sign in"}
-              >
-                <User
-                  size={21}
-                  className="text-brand-dark group-hover:text-brand-primary transition-colors"
-                />
-              </Link>
+              {user ? (
+                <button
+                  onClick={handleLogout}
+                  className="hidden lg:block relative group p-1"
+                  aria-label="Logout"
+                >
+                  <LogOut
+                    size={21}
+                    className="text-brand-dark group-hover:text-red-500 transition-colors"
+                  />
+                </button>
+              ) : (
+                <Link
+                  href="/login"
+                  className="hidden lg:block relative group p-1"
+                  aria-label="Sign in"
+                >
+                  <User
+                    size={21}
+                    className="text-brand-dark group-hover:text-brand-primary transition-colors"
+                  />
+                </Link>
+              )}
 
-              {/* Cart Icon */}
               <Link href="/cart" className="relative group p-1">
                 <ShoppingCart
                   size={21}
@@ -124,17 +158,11 @@ export default function Navbar() {
                 )}
               </Link>
 
-              {/* Mobile Menu Button */}
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="lg:hidden p-2 hover:bg-foreground/5 rounded-md transition-colors"
-                aria-label="Toggle menu"
               >
-                {isMenuOpen ? (
-                  <X size={24} className="text-brand-dark" />
-                ) : (
-                  <Menu size={24} className="text-brand-dark" />
-                )}
+                {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
               </button>
             </div>
           </div>
@@ -145,15 +173,14 @@ export default function Navbar() {
       <div
         className={`fixed inset-0 z-[60] bg-brand-warm transition-all duration-500 lg:hidden ${
           isMenuOpen
-            ? "opacity-100 pointer-events-auto"
-            : "opacity-0 pointer-events-none translate-x-full"
+            ? "opacity-100 translate-x-0"
+            : "opacity-0 translate-x-full"
         }`}
       >
         <div className="flex flex-col h-full pt-24 px-10 pb-10">
           <button
             onClick={() => setIsMenuOpen(false)}
             className="absolute top-6 right-6 p-3 rounded-full bg-brand-primary/10 text-brand-dark hover:bg-brand-primary hover:text-white transition-all"
-            aria-label="Close menu"
           >
             <X size={22} />
           </button>
@@ -163,67 +190,50 @@ export default function Navbar() {
           </span>
 
           <nav className="flex flex-col">
-            {navItems.map((item, idx) => {
-              const isActive = pathname === item.href;
-              const isLast = idx === navItems.length - 1;
-
-              return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  onClick={() => setIsMenuOpen(false)}
-                  className={`flex items-center justify-between py-5 group transition-all ${
-                    !isLast ? "border-b border-border" : ""
-                  } ${
-                    isMenuOpen
-                      ? "translate-x-0 opacity-100"
-                      : "-translate-x-10 opacity-0"
-                  }`}
-                  style={{ transitionDelay: `${idx * 40}ms` }}
-                >
-                  <div className="flex items-center gap-4">
-                    <item.icon
-                      className={`w-5 h-5 transition-colors ${
-                        isActive
-                          ? "text-brand-primary"
-                          : "text-foreground/20 group-hover:text-brand-primary"
-                      }`}
-                    />
-                    <span
-                      className={`font-heading text-xl tracking-tight group-hover:text-brand-primary transition-colors ${
-                        isActive ? "text-brand-primary" : "text-brand-dark"
-                      }`}
-                    >
-                      {item.name}
-                    </span>
-                  </div>
-                  <ChevronRight
-                    size={16}
-                    className={
-                      isActive ? "text-brand-primary" : "text-foreground/10"
-                    }
+            {navItems.map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                onClick={() => setIsMenuOpen(false)}
+                className="flex items-center justify-between py-5 border-b border-border group"
+              >
+                <div className="flex items-center gap-4">
+                  <item.icon
+                    size={20}
+                    className="text-brand-dark/20 group-hover:text-brand-primary transition-colors"
                   />
-                </Link>
-              );
-            })}
+                  <span className="font-heading text-xl text-brand-dark">
+                    {item.name}
+                  </span>
+                </div>
+                <ChevronRight size={16} className="text-brand-dark/10" />
+              </Link>
+            ))}
 
-            <Link
-              href={user ? "/profile" : "/login"}
-              onClick={() => setIsMenuOpen(false)}
-              className={`flex items-center justify-between py-5 border-t border-border mt-4 transition-all ${
-                isMenuOpen
-                  ? "translate-x-0 opacity-100"
-                  : "-translate-x-10 opacity-0"
-              }`}
-              style={{ transitionDelay: `${navItems.length * 40}ms` }}
-            >
-              <div className="flex items-center gap-4">
-                <User size={20} className="text-brand-accent" />
-                <span className="font-heading text-xl text-brand-dark">
-                  {user ? "Dashboard" : "Sign In"}
-                </span>
-              </div>
-            </Link>
+            <div className="mt-4">
+              {user ? (
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-4 w-full py-5 border-t border-border"
+                >
+                  <LogOut size={20} className="text-red-500" />
+                  <span className="font-heading text-xl text-brand-dark">
+                    Logout
+                  </span>
+                </button>
+              ) : (
+                <Link
+                  href="/login"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="flex items-center gap-4 py-5 border-t border-border"
+                >
+                  <User size={20} className="text-brand-accent" />
+                  <span className="font-heading text-xl text-brand-dark">
+                    Sign In
+                  </span>
+                </Link>
+              )}
+            </div>
           </nav>
         </div>
       </div>

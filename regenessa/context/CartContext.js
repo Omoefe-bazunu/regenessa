@@ -50,7 +50,7 @@ export const CartProvider = ({ children }) => {
       });
       setCart(data.items);
       toast.success(`${product.name} added to cart`);
-      setIsCartOpen(true); // Automatically open the drawer on success
+      setIsCartOpen(true);
     } catch (error) {
       toast.error("Failed to add item");
     }
