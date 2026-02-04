@@ -36,7 +36,7 @@ const ProductSection = () => {
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
           <div className="max-w-xl">
-            <span className="font-jakarta text-[11px] font-black uppercase tracking-[0.4em] text-brand-accent block">
+            <span className="font-jakarta text-[11px] mb-4 font-black uppercase tracking-[0.4em] text-brand-accent block">
               Regenessa Solutions
             </span>
             <h2 className="font-syne text-3xl md:text-4xl font-bold text-brand-dark mb-6 leading-[1.1]">

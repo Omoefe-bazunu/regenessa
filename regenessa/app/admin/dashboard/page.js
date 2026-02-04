@@ -17,7 +17,11 @@ import {
   X,
   ShieldAlert,
   Loader2,
+  QuoteIcon,
+  ChartAreaIcon,
 } from "lucide-react";
+import AdminReviews from "@/components/admin/ManageReviews";
+import ProductAnalytics from "@/components/admin/products-analytics";
 
 export default function AdminDashboard() {
   const { user, logout, loading: authLoading } = useAuth();
@@ -41,8 +45,10 @@ export default function AdminDashboard() {
   const menuItems = [
     { id: "overview", label: "Manage Orders", icon: LayoutDashboard },
     { id: "products", label: "Manage Products", icon: Package },
-    { id: "consultations", label: "Consultations", icon: Stethoscope }, // New Menu Item
+    { id: "consultations", label: "Consultations", icon: Stethoscope },
     { id: "messages", label: "Inquiries", icon: MessageSquare },
+    { id: "reviews", label: "Reviews", icon: QuoteIcon },
+    { id: "analytics", label: "Analytics", icon: ChartAreaIcon },
   ];
 
   const handleMenuClick = (id) => {
@@ -155,6 +161,8 @@ export default function AdminDashboard() {
             {activeMenu === "messages" && <InquiryList />}
             {activeMenu === "overview" && <ManageOrders />}
             {activeMenu === "consultations" && <ManageConsultations />}
+            {activeMenu === "reviews" && <AdminReviews />}
+            {activeMenu === "analytics" && <ProductAnalytics />}
           </div>
         </main>
       </div>

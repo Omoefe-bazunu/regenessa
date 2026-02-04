@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import api from "@/lib/api";
 import {
@@ -36,7 +36,9 @@ export default function ProductDetails({ params }) {
 
   const { addToCart } = useCart();
   const { user } = useAuth();
+  const hasLogged = useRef(false);
 
+  // 1. DATA FETCHING EFFECT
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -44,6 +46,7 @@ export default function ProductDetails({ params }) {
         setProduct(data);
         setSelectedImage(data.imageUrl);
       } catch (err) {
+        // This only fires if the actual API call fails
         toast.error("Product data could not be retrieved");
       } finally {
         setLoading(false);
@@ -51,6 +54,19 @@ export default function ProductDetails({ params }) {
     };
     fetchProduct();
   }, [productId]);
+
+  // 2. SEPARATE ANALYTICS EFFECT (Fixes Duplication & Error Toast)
+  useEffect(() => {
+    // Only fire if product is loaded and has a name
+    if (product && product.id && product.name) {
+      api
+        .post("/analytics/log", {
+          productId: product.id,
+          productName: product.name,
+        })
+        .catch((err) => console.error("Analytics failed", err));
+    }
+  }, [product?.id]);
 
   const handleAddToCart = () => {
     if (!user) {
@@ -146,7 +162,7 @@ export default function ProductDetails({ params }) {
             Catalog
           </Link>
           <ChevronRight size={10} />
-          <span className="text-brand-primary truncate">{product.name}</span>
+          <span className="text-brand-dark truncate">{product.name}</span>
         </nav>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-start">
@@ -214,7 +230,7 @@ export default function ProductDetails({ params }) {
                 {product.category}
               </span>
               <div className="flex items-center gap-1.5">
-                <Star className="w-4 h-4 fill-brand-primary text-brand-primary" />
+                <Star className="w-4 h-4 fill-brand-primary text-brand-dark" />
                 <span className="text-sm font-bold text-brand-dark">
                   {product.avgRating || "5.0"}
                 </span>
@@ -229,9 +245,9 @@ export default function ProductDetails({ params }) {
               {product.shortDescription}
             </p>
 
-            <div className="bg-white border border-brand-dark/5 p-8 mb-10 shadow-sm relative overflow-hidden">
+            <div className="bg-warm border border-brand-dark/5 p-8 mb-10 shadow-sm relative overflow-hidden">
               <div className="relative z-10">
-                <p className="text-[10px] font-black uppercase tracking-widest text-brand-primary/40 mb-2">
+                <p className="text-[10px] font-black uppercase tracking-widest text-brand-dark/40 mb-2">
                   Price per unit
                 </p>
                 <div className="flex items-baseline gap-3">
@@ -243,7 +259,7 @@ export default function ProductDetails({ params }) {
                   </span>
                 </div>
               </div>
-              <div className="absolute -right-4 -bottom-4 opacity-5 text-brand-primary">
+              <div className="absolute -right-4 -bottom-4 opacity-5 text-brand-dark">
                 <Dna size={120} />
               </div>
             </div>
@@ -274,7 +290,7 @@ export default function ProductDetails({ params }) {
 
               <button
                 onClick={handleAddToCart}
-                className="w-full py-6 bg-brand-primary text-white font-black text-xs uppercase tracking-[0.3em] flex items-center justify-center gap-4 hover:bg-brand-dark transition-all duration-500 shadow-xl shadow-brand-primary/20"
+                className="w-full py-6 bg-brand-dark text-brand-warm font-black text-xs uppercase tracking-[0.3em] flex items-center justify-center gap-4 hover:bg-brand-dark transition-all duration-500 shadow-xl shadow-brand-primary/20"
               >
                 <ShoppingCart size={20} />
                 Add to cart
