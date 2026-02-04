@@ -47,16 +47,16 @@ const Hero = () => {
           </Link>
 
           <Link
-            href="/contact"
+            href="/consultation"
             className="flex items-center gap-3 text-white/90 hover:text-white font-jakarta font-bold text-xs uppercase tracking-widest transition-colors py-4 px-6 border border-white/20 hover:border-white/40 rounded-sm"
           >
-            Clinical Consultation
+            Expert Consultation
           </Link>
         </div>
       </div>
 
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 opacity-30">
-        <div className="w-[1px] h-10 bg-gradient-to-b from-white to-transparent" />
+        <div className="w-px h-10 bg-linear-to-b from-white to-transparent" />
       </div>
     </section>
   );

@@ -49,7 +49,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${syne.variable} ${plusJakarta.variable}`}>
-      <body className="font-sans bg-brand-warm text-foreground antialiased">
+      <body className="font-sans bg-brand-warm text-foreground antialiased ">
         <ThemeProvider>
           <AuthProvider>
             <CartProvider>

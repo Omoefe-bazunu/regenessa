@@ -5,7 +5,6 @@ import api from "@/lib/api";
 import {
   Star,
   Activity,
-  ShieldCheck,
   Minus,
   Plus,
   ShoppingCart,
@@ -13,16 +12,15 @@ import {
   Loader2,
   Lock,
   Dna,
-  Zap,
-  Microscope,
   CheckCircle2,
+  Play,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 import RelatedProducts from "@/components/RelatedProducts";
-import ReviewSection from "@/components/ReviewSection"; // Import the Review Section
+import ReviewSection from "@/components/ReviewSection";
 
 export default function ProductDetails({ params }) {
   const resolvedParams = React.use(params);
@@ -33,6 +31,8 @@ export default function ProductDetails({ params }) {
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState("overview");
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [showVideo, setShowVideo] = useState(false);
 
   const { addToCart } = useCart();
   const { user } = useAuth();
@@ -42,6 +42,7 @@ export default function ProductDetails({ params }) {
       try {
         const { data } = await api.get(`/products/${productId}`);
         setProduct(data);
+        setSelectedImage(data.imageUrl);
       } catch (err) {
         toast.error("Product data could not be retrieved");
       } finally {
@@ -72,6 +73,11 @@ export default function ProductDetails({ params }) {
   }
 
   if (!product) return null;
+
+  // Combine all images for gallery
+  const allImages = [product.imageUrl, ...(product.gallery || [])].filter(
+    Boolean,
+  );
 
   return (
     <main className="min-h-screen bg-brand-warm pt-12 pb-20 transition-all">
@@ -104,6 +110,31 @@ export default function ProductDetails({ params }) {
         </div>
       )}
 
+      {/* --- VIDEO MODAL --- */}
+      {showVideo && product.videoUrl && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center px-6 backdrop-blur-md bg-brand-dark/80"
+          onClick={() => setShowVideo(false)}
+        >
+          <div className="relative w-full max-w-4xl aspect-video bg-black rounded-lg overflow-hidden">
+            <video
+              controls
+              autoPlay
+              className="w-full h-full"
+              src={product.videoUrl}
+            >
+              Your browser does not support the video tag.
+            </video>
+            <button
+              onClick={() => setShowVideo(false)}
+              className="absolute top-4 right-4 text-white bg-brand-dark/50 hover:bg-brand-dark px-4 py-2 text-xs font-bold uppercase tracking-widest"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto px-6 md:px-16">
         {/* BREADCRUMB */}
         <nav className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-brand-dark/40 mb-12 animate-page-reveal">
@@ -120,10 +151,13 @@ export default function ProductDetails({ params }) {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-start">
           {/* LEFT: IMAGE AREA */}
-          <div className="animate-page-reveal">
+          <div className="animate-page-reveal space-y-4">
+            {/* Main Image Display */}
             <div className="relative aspect-square bg-white border border-brand-dark/5 shadow-2xl overflow-hidden group">
               <Image
-                src={product.imageUrl || "/placeholder-bottle.png"}
+                src={
+                  selectedImage || product.imageUrl || "/placeholder-bottle.png"
+                }
                 alt={product.name}
                 fill
                 className="object-cover transition-transform duration-1000 group-hover:scale-105"
@@ -132,6 +166,44 @@ export default function ProductDetails({ params }) {
               <div className="absolute top-8 left-8 bg-brand-primary text-white px-5 py-2 text-[10px] font-black uppercase tracking-widest">
                 {product.status || "Clinical Grade"}
               </div>
+            </div>
+
+            {/* Thumbnail Gallery */}
+            <div className="grid grid-cols-4 gap-3">
+              {allImages.map((img, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setSelectedImage(img)}
+                  className={`relative aspect-square bg-white border-2 overflow-hidden transition-all ${
+                    selectedImage === img
+                      ? "border-brand-primary"
+                      : "border-brand-dark/10 hover:border-brand-primary/50"
+                  }`}
+                >
+                  <Image
+                    src={img}
+                    alt={`View ${idx + 1}`}
+                    fill
+                    className="object-cover"
+                  />
+                </button>
+              ))}
+
+              {/* Video Thumbnail */}
+              {product.videoUrl && (
+                <button
+                  onClick={() => setShowVideo(true)}
+                  className="relative aspect-square bg-brand-dark border-2 border-brand-dark/10 hover:border-brand-primary/50 overflow-hidden transition-all flex items-center justify-center group"
+                >
+                  <Play
+                    className="text-white group-hover:scale-110 transition-transform"
+                    size={28}
+                  />
+                  <span className="absolute bottom-2 text-[8px] font-black uppercase tracking-widest text-white">
+                    Video
+                  </span>
+                </button>
+              )}
             </div>
           </div>
 

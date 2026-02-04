@@ -1,362 +1,334 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useCart } from "@/context/CartContext";
-import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
+import { useCart } from "@/context/CartContext";
 import api from "@/lib/api";
 import { toast } from "react-hot-toast";
 import {
+  ShoppingBag,
+  Loader2,
   CreditCard,
   MapPin,
-  UploadCloud,
+  User,
+  Phone,
+  Mail,
+  Home,
   CheckCircle2,
-  Loader2,
-  ArrowRight,
-  Building,
-  Copy,
 } from "lucide-react";
+import Image from "next/image";
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { cart, cartTotal, clearCart, cartLoading } = useCart();
-  const { user, loading: authLoading } = useAuth();
-
+  const { user } = useAuth();
+  const { cart, clearCart } = useCart();
   const [loading, setLoading] = useState(false);
-  const [file, setFile] = useState(null);
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [orderId, setOrderId] = useState("");
-  const [shipping, setShipping] = useState({
+  const [shippingDetails, setShippingDetails] = useState({
     fullName: "",
+    email: user?.email || "",
     phone: "",
     address: "",
     city: "",
-    state: "Lagos",
+    state: "",
+    postalCode: "",
   });
 
-  const companyBank = {
-    bank: "Opay",
-    accountName: "Omoefe Bazunu",
-    accountNumber: "9043970401",
-  };
-
-  // Redirect if not authenticated
   useEffect(() => {
-    if (!authLoading && !user) {
+    if (!user) {
+      toast.error("Please login to checkout");
       router.push("/login");
     }
-  }, [user, authLoading, router]);
-
-  // Redirect if cart is empty
-  useEffect(() => {
-    if (!cartLoading && cart.length === 0 && !showSuccess) {
+    if (cart.length === 0) {
+      toast.error("Your cart is empty");
       router.push("/products");
     }
-  }, [cart, cartLoading, showSuccess, router]);
+  }, [user, cart, router]);
 
-  // Pre-fill user data
-  useEffect(() => {
-    if (user) {
-      setShipping((prev) => ({
-        ...prev,
-        fullName: user.fullName || "",
-      }));
-    }
-  }, [user]);
+  const totalAmount = cart.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0,
+  );
 
-  const copyToClipboard = (text) => {
-    navigator.clipboard.writeText(text);
-    toast.success("Copied to clipboard");
-  };
-
-  const uploadReceipt = async (receiptFile) => {
-    const formDataToSend = new FormData();
-    formDataToSend.append("image", receiptFile);
-
-    const response = await api.post("/upload/payment-proof", formDataToSend, {
-      headers: { "Content-Type": "multipart/form-data" },
+  const handleInputChange = (e) => {
+    setShippingDetails({
+      ...shippingDetails,
+      [e.target.name]: e.target.value,
     });
-
-    return response.data.imageUrl;
   };
 
-  const handleOrder = async (e) => {
+  const handleCheckout = async (e) => {
     e.preventDefault();
 
-    if (!file) {
-      toast.error("Please upload your payment receipt");
-      return;
-    }
-
+    // Validation
     if (
-      !shipping.fullName ||
-      !shipping.phone ||
-      !shipping.address ||
-      !shipping.city
+      !shippingDetails.fullName ||
+      !shippingDetails.email ||
+      !shippingDetails.phone ||
+      !shippingDetails.address ||
+      !shippingDetails.city ||
+      !shippingDetails.state
     ) {
-      toast.error("Please fill in all shipping details");
-      return;
+      return toast.error("Please fill in all required fields");
     }
 
     setLoading(true);
 
     try {
-      // 1. Upload Payment Proof to Backend (which stores in Firebase)
-      const paymentProofUrl = await uploadReceipt(file);
+      // Step 1: Initialize Flutterwave Payment
+      const { data } = await api.post("/payment/initialize", {
+        amount: totalAmount,
+        email: shippingDetails.email,
+        name: shippingDetails.fullName,
+        phone: shippingDetails.phone,
+      });
 
-      // 2. Submit Order to Backend
-      const payload = {
-        items: cart,
-        totalAmount: cartTotal,
-        shippingDetails: shipping,
-        paymentMethod: "Bank Transfer",
-        paymentProofUrl: paymentProofUrl,
-      };
+      // Step 2: Store shipping details in localStorage for after payment
+      localStorage.setItem(
+        "pendingOrder",
+        JSON.stringify({
+          items: cart,
+          totalAmount,
+          shippingDetails,
+          tx_ref: data.tx_ref,
+        }),
+      );
 
-      const { data } = await api.post("/orders/checkout", payload);
-
-      // 3. Success Flow
-      setOrderId(data.orderId);
-      setShowSuccess(true);
-      clearCart();
+      // Step 3: Redirect to Flutterwave payment page
+      window.location.href = data.link;
     } catch (err) {
-      console.error("Order error:", err);
-      toast.error(err.response?.data?.error || "Order failed to submit");
-    } finally {
+      toast.error(err.response?.data?.error || "Payment initialization failed");
       setLoading(false);
     }
   };
 
-  if (authLoading || cartLoading) {
-    return (
-      <main className="min-h-screen bg-brand-warm dark:bg-brand-dark flex items-center justify-center">
-        <Loader2 className="animate-spin text-brand-primary" size={48} />
-      </main>
-    );
-  }
-
-  if (!user || (cart.length === 0 && !showSuccess)) return null;
+  const inputClass =
+    "w-full px-5 py-4 bg-white border border-brand-dark/10 rounded-xl outline-none focus:ring-2 focus:ring-brand-primary transition-all text-sm";
 
   return (
-    <main className="min-h-screen bg-brand-warm dark:bg-brand-dark pt-32 pb-20">
-      {/* SUCCESS MODAL */}
-      {showSuccess && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center px-6">
-          <div className="absolute inset-0 bg-brand-dark/80 backdrop-blur-md" />
-          <div className="relative bg-white dark:bg-brand-dark w-full max-w-md p-10 rounded-[3rem] text-center space-y-6 shadow-2xl animate-fade-in">
-            <div className="w-20 h-20 bg-green-100 dark:bg-green-500/20 text-green-600 rounded-full flex items-center justify-center mx-auto">
-              <CheckCircle2 size={48} />
-            </div>
-            <div>
-              <h2 className="font-heading text-3xl text-brand-dark dark:text-white mb-3">
-                Order Received!
-              </h2>
-              <p className="text-foreground/60 mb-2">
-                Order{" "}
-                <span className="font-bold text-brand-primary">
-                  #{orderId.slice(0, 8)}
-                </span>
-              </p>
-              <p className="text-foreground/60 text-sm">
-                Your bulk order has been submitted. Our team will verify your
-                payment and contact you shortly via phone to confirm delivery
-                logistics.
-              </p>
-            </div>
-            <button
-              onClick={() => router.push("/orders")}
-              className="w-full py-5 bg-brand-primary text-white rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-brand-dark transition-all shadow-xl"
-            >
-              Track Order Status <ArrowRight size={20} />
-            </button>
-          </div>
+    <main className="min-h-screen bg-brand-warm pt-32 pb-20">
+      <div className="max-w-6xl mx-auto px-6 md:px-16">
+        <div className="flex items-center gap-3 mb-12">
+          <ShoppingBag className="text-brand-primary" size={32} />
+          <h1 className="font-syne text-4xl md:text-5xl font-bold">Checkout</h1>
         </div>
-      )}
 
-      <div className="max-w-7xl mx-auto px-6">
-        <h1 className="font-heading text-4xl lg:text-6xl mb-12">
-          Finalize <span className="text-brand-primary">Order.</span>
-        </h1>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-          {/* LEFT: SHIPPING & PAYMENT */}
-          <div className="space-y-12">
-            <section className="space-y-6">
-              <div className="flex items-center gap-3 text-brand-primary font-bold uppercase tracking-widest text-xs">
-                <MapPin size={16} /> Shipping Details
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <input
-                    required
-                    placeholder="Full Name"
-                    className="w-full p-4 bg-white dark:bg-white/5 border border-border rounded-xl text-sm text-brand-dark dark:text-white"
-                    value={shipping.fullName}
-                    onChange={(e) =>
-                      setShipping({ ...shipping, fullName: e.target.value })
-                    }
-                  />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+          {/* LEFT: Shipping Form */}
+          <div className="lg:col-span-2">
+            <form onSubmit={handleCheckout} className="space-y-8">
+              {/* Contact Information */}
+              <div className="bg-white p-8 rounded-2xl border border-brand-dark/5 shadow-sm">
+                <div className="flex items-center gap-3 mb-6">
+                  <User className="text-brand-primary" size={24} />
+                  <h2 className="font-syne text-2xl font-bold">
+                    Contact Information
+                  </h2>
                 </div>
-                <div className="space-y-1">
-                  <input
-                    required
-                    placeholder="Phone Number"
-                    className="w-full p-4 bg-white dark:bg-white/5 border border-border rounded-xl text-sm text-brand-dark dark:text-white"
-                    value={shipping.phone}
-                    onChange={(e) =>
-                      setShipping({ ...shipping, phone: e.target.value })
-                    }
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <input
-                    required
-                    placeholder="Detailed Delivery Address"
-                    className="w-full p-4 bg-white dark:bg-white/5 border border-border rounded-xl text-sm text-brand-dark dark:text-white"
-                    value={shipping.address}
-                    onChange={(e) =>
-                      setShipping({ ...shipping, address: e.target.value })
-                    }
-                  />
-                </div>
-                <input
-                  required
-                  placeholder="City"
-                  className="w-full p-4 bg-white dark:bg-white/5 border border-border rounded-xl text-sm text-brand-dark dark:text-white"
-                  value={shipping.city}
-                  onChange={(e) =>
-                    setShipping({ ...shipping, city: e.target.value })
-                  }
-                />
-                <input
-                  required
-                  placeholder="State"
-                  className="w-full p-4 bg-white dark:bg-white/5 border border-border rounded-xl text-sm text-brand-dark dark:text-white"
-                  value={shipping.state}
-                  onChange={(e) =>
-                    setShipping({ ...shipping, state: e.target.value })
-                  }
-                />
-              </div>
-            </section>
-
-            <section className="bg-brand-dark text-white p-8 rounded-[2.5rem] space-y-6 shadow-xl">
-              <div className="flex items-center gap-3 text-brand-accent font-bold uppercase tracking-widest text-xs">
-                <Building size={16} /> Bank Transfer Details
-              </div>
-              <div className="space-y-4">
-                <p className="text-sm opacity-60">
-                  Please transfer exactly{" "}
-                  <span className="text-brand-accent font-bold">
-                    ₦{cartTotal.toLocaleString()}
-                  </span>{" "}
-                  to the account below:
-                </p>
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center p-4 bg-white/5 rounded-2xl border border-white/10">
-                    <div>
-                      <p className="text-[10px] uppercase opacity-40 font-bold">
-                        Bank Name
-                      </p>
-                      <p className="font-bold">{companyBank.bank}</p>
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-center p-4 bg-white/5 rounded-2xl border border-white/10">
-                    <div>
-                      <p className="text-[10px] uppercase opacity-40 font-bold">
-                        Account Name
-                      </p>
-                      <p className="font-bold text-sm">
-                        {companyBank.accountName}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-center p-4 bg-white/5 rounded-2xl border border-white/10">
-                    <div>
-                      <p className="text-[10px] uppercase opacity-40 font-bold">
-                        Account Number
-                      </p>
-                      <p className="font-bold text-xl text-brand-accent tracking-widest">
-                        {companyBank.accountNumber}
-                      </p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => copyToClipboard(companyBank.accountNumber)}
-                      className="p-2 hover:bg-white/10 rounded-lg text-brand-accent transition-all"
-                    >
-                      <Copy size={20} />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </section>
-          </div>
-
-          {/* RIGHT: RECEIPT UPLOAD & SUMMARY */}
-          <div className="space-y-8 lg:sticky lg:top-32 h-fit">
-            <section className="space-y-4">
-              <div className="flex items-center gap-3 text-brand-primary font-bold uppercase tracking-widest text-xs">
-                <UploadCloud size={16} /> Upload Payment Receipt
-              </div>
-              <div className="relative group border-2 border-dashed border-border rounded-[2.5rem] p-10 flex flex-col items-center justify-center bg-white dark:bg-white/5 hover:border-brand-primary transition-all cursor-pointer overflow-hidden min-h-[250px]">
-                {file ? (
-                  <div className="text-center">
-                    <CheckCircle2
-                      size={40}
-                      className="text-green-500 mx-auto mb-2"
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-widest text-brand-dark/50 mb-2">
+                      Full Name *
+                    </label>
+                    <input
+                      type="text"
+                      name="fullName"
+                      value={shippingDetails.fullName}
+                      onChange={handleInputChange}
+                      className={inputClass}
+                      placeholder="John Doe"
+                      required
                     />
-                    <p className="text-xs font-bold text-brand-primary uppercase truncate max-w-[200px]">
-                      {file.name}
-                    </p>
-                    <p className="text-[10px] opacity-40">
-                      Click to change file
-                    </p>
                   </div>
-                ) : (
-                  <div className="text-center opacity-40">
-                    <UploadCloud size={40} className="mx-auto mb-2" />
-                    <p className="text-sm font-bold uppercase">
-                      Upload Screenshot
-                    </p>
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-widest text-brand-dark/50 mb-2">
+                      Email *
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={shippingDetails.email}
+                      onChange={handleInputChange}
+                      className={inputClass}
+                      placeholder="john@example.com"
+                      required
+                    />
                   </div>
-                )}
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => setFile(e.target.files[0])}
-                  className="absolute inset-0 opacity-0 cursor-pointer"
-                />
+                  <div className="md:col-span-2">
+                    <label className="block text-xs font-bold uppercase tracking-widest text-brand-dark/50 mb-2">
+                      Phone Number *
+                    </label>
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={shippingDetails.phone}
+                      onChange={handleInputChange}
+                      className={inputClass}
+                      placeholder="+234 800 000 0000"
+                      required
+                    />
+                  </div>
+                </div>
               </div>
-            </section>
 
-            <div className="p-8 bg-brand-warm/50 dark:bg-white/5 rounded-[2.5rem] border border-border">
-              <div className="flex justify-between items-end mb-8">
-                <div>
-                  <p className="text-[10px] font-bold uppercase opacity-40 mb-1">
-                    Total Order Value
-                  </p>
-                  <p className="font-heading text-4xl text-brand-dark dark:text-white">
-                    ₦{cartTotal.toLocaleString()}
-                  </p>
+              {/* Shipping Address */}
+              <div className="bg-white p-8 rounded-2xl border border-brand-dark/5 shadow-sm">
+                <div className="flex items-center gap-3 mb-6">
+                  <MapPin className="text-brand-primary" size={24} />
+                  <h2 className="font-syne text-2xl font-bold">
+                    Shipping Address
+                  </h2>
                 </div>
-                <div className="text-right">
-                  <p className="text-xs font-bold text-brand-primary">
-                    {cart.length} Bulk Items
-                  </p>
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-widest text-brand-dark/50 mb-2">
+                      Street Address *
+                    </label>
+                    <input
+                      type="text"
+                      name="address"
+                      value={shippingDetails.address}
+                      onChange={handleInputChange}
+                      className={inputClass}
+                      placeholder="123 Main Street"
+                      required
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-widest text-brand-dark/50 mb-2">
+                        City *
+                      </label>
+                      <input
+                        type="text"
+                        name="city"
+                        value={shippingDetails.city}
+                        onChange={handleInputChange}
+                        className={inputClass}
+                        placeholder="Lagos"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-widest text-brand-dark/50 mb-2">
+                        State *
+                      </label>
+                      <input
+                        type="text"
+                        name="state"
+                        value={shippingDetails.state}
+                        onChange={handleInputChange}
+                        className={inputClass}
+                        placeholder="Lagos State"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-widest text-brand-dark/50 mb-2">
+                      Postal Code
+                    </label>
+                    <input
+                      type="text"
+                      name="postalCode"
+                      value={shippingDetails.postalCode}
+                      onChange={handleInputChange}
+                      className={inputClass}
+                      placeholder="100001"
+                    />
+                  </div>
                 </div>
               </div>
+
               <button
-                onClick={handleOrder}
-                disabled={loading || !file}
-                className="w-full py-5 bg-brand-primary text-white rounded-2xl font-bold flex items-center justify-center gap-3 shadow-xl hover:bg-brand-dark transition-all disabled:opacity-50"
+                type="submit"
+                disabled={loading}
+                className="w-full py-6 bg-brand-primary text-white font-black text-sm uppercase tracking-widest flex items-center justify-center gap-4 hover:bg-brand-dark transition-all shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? (
-                  <Loader2 className="animate-spin" size={20} />
+                  <>
+                    <Loader2 className="animate-spin" size={20} />
+                    Processing...
+                  </>
                 ) : (
-                  <CreditCard size={20} />
+                  <>
+                    <CreditCard size={20} />
+                    Proceed to Payment
+                  </>
                 )}
-                {loading ? "Processing Order..." : "Confirm & Place Order"}
               </button>
+            </form>
+          </div>
+
+          {/* RIGHT: Order Summary */}
+          <div className="lg:sticky lg:top-32 h-fit">
+            <div className="bg-white p-8 rounded-2xl border border-brand-dark/5 shadow-sm">
+              <h2 className="font-syne text-2xl font-bold mb-6">
+                Order Summary
+              </h2>
+              {/* Order Summary - Line ~264 in your checkout page */}
+              <div className="space-y-4 mb-6">
+                {cart.map((item) => (
+                  <div
+                    key={item.id || item.productId} // ADD THIS LINE
+                    className="flex items-center gap-4 pb-4 border-b border-brand-dark/5"
+                  >
+                    <div className="relative w-16 h-16 bg-brand-warm rounded-lg overflow-hidden">
+                      <Image
+                        src={item.imageUrl || "/placeholder.png"}
+                        alt={item.name}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-bold text-sm">{item.name}</h3>
+                      <p className="text-xs text-brand-dark/50">
+                        Qty: {item.quantity}
+                      </p>
+                    </div>
+                    <span className="font-bold">
+                      ₦{(item.price * item.quantity).toLocaleString()}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="space-y-3 pt-6 border-t border-brand-dark/10">
+                <div className="flex justify-between text-sm">
+                  <span className="text-brand-dark/50">Subtotal</span>
+                  <span className="font-bold">
+                    ₦{totalAmount.toLocaleString()}
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-brand-dark/50">Shipping</span>
+                  <span className="font-bold text-brand-primary">FREE</span>
+                </div>
+                <div className="flex justify-between text-lg font-bold pt-4 border-t border-brand-dark/10">
+                  <span>Total</span>
+                  <span className="text-brand-primary">
+                    ₦{totalAmount.toLocaleString()}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6 p-6 bg-brand-accent/10 rounded-xl border border-brand-primary/20">
+              <div className="flex items-start gap-3">
+                <CheckCircle2
+                  className="text-brand-primary shrink-0 mt-1"
+                  size={20}
+                />
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-widest text-brand-primary mb-1">
+                    Secure Payment
+                  </p>
+                  <p className="text-xs text-brand-dark/60 leading-relaxed">
+                    Your payment is processed securely via Flutterwave. We never
+                    store your card details.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>

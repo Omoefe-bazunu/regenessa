@@ -1,8 +1,10 @@
+import AboutSection from "@/components/About";
+import ConsultationCTA from "@/components/ContactSection";
 import Hero from "@/components/Hero";
 import ProductSection from "@/components/ProductSection";
+import Reviews from "@/components/Reviews";
 import WellnessBar from "@/components/WellnessBar";
 // import RecentProducts from "@/components/RecentProducts";
-// import About from "@/components/About";
 // import Contact from "@/components/Contact";
 // import Reviews from "@/components/Reviews";
 import React from "react";
@@ -13,10 +15,9 @@ function page() {
       <Hero />
       <WellnessBar />
       <ProductSection />
-      {/* <RecentProducts />
-      <About />
+      <AboutSection />
       <Reviews />
-      <Contact /> */}
+      <ConsultationCTA />
     </div>
   );
 }

@@ -5,10 +5,12 @@ import { useAuth } from "@/context/AuthContext";
 import ManageProducts from "@/components/admin/ManageProducts";
 import InquiryList from "@/components/admin/InquiryList";
 import ManageOrders from "@/components/admin/ManageOrders";
+import ManageConsultations from "@/components/admin/ManageConsultations";
 import {
   LayoutDashboard,
   Package,
   MessageSquare,
+  Stethoscope,
   LogOut,
   ChevronRight,
   Menu,
@@ -21,10 +23,10 @@ export default function AdminDashboard() {
   const { user, logout, loading: authLoading } = useAuth();
   const router = useRouter();
 
-  const [activeMenu, setActiveMenu] = useState("products");
+  const [activeMenu, setActiveMenu] = useState("overview");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const ADMIN_EMAIL = "raniem57@gmail.com";
+  const ADMIN_EMAIL = "omoefe@regenessa.com"; // [cite: 14]
   const isAuthorized = user && user.email === ADMIN_EMAIL;
 
   useEffect(() => {
@@ -39,6 +41,7 @@ export default function AdminDashboard() {
   const menuItems = [
     { id: "overview", label: "Manage Orders", icon: LayoutDashboard },
     { id: "products", label: "Manage Products", icon: Package },
+    { id: "consultations", label: "Consultations", icon: Stethoscope }, // New Menu Item
     { id: "messages", label: "Inquiries", icon: MessageSquare },
   ];
 
@@ -64,21 +67,20 @@ export default function AdminDashboard() {
         <div className="w-20 h-20 bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-6">
           <ShieldAlert size={40} />
         </div>
-        <h1 className="font-heading text-3xl mb-2">Access Denied</h1>
-        <p className="text-foreground/60 max-w-sm">
-          You do not have permission to view this page. Redirecting you to the
-          home page...
+        <h1 className="font-syne text-3xl mb-2 font-bold">Access Denied</h1>
+        <p className="font-jakarta text-foreground/60 max-w-sm">
+          Redirecting to secure home page...
         </p>
       </div>
     );
   }
 
   return (
-    <div className="relative mt-20 min-h-screen bg-[#FDFDFD] dark:bg-[#080E0B]">
-      {/* --- MOBILE TOP BAR --- */}
+    <div className="relative min-h-screen bg-[#FDFDFD] dark:bg-[#080E0B]">
+      {/* MOBILE TOP BAR */}
       <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white dark:bg-brand-dark border-b border-border z-[60] flex items-center justify-between px-6">
-        <h1 className="font-heading text-lg text-brand-primary">
-          Clean Foods Admin
+        <h1 className="font-syne font-bold text-lg text-brand-primary uppercase">
+          REGENESSA ADMIN
         </h1>
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -88,21 +90,19 @@ export default function AdminDashboard() {
         </button>
       </div>
 
-      <div className="flex pt-16 lg:pt-0">
-        {/* --- SIDEBAR --- */}
+      <div className="flex">
+        {/* SIDEBAR */}
         <aside
-          className={`
-          fixed top-0 left-0 bottom-0 w-72 bg-white dark:bg-brand-dark border-r border-border p-6 flex flex-col transition-transform duration-300 ease-in-out z-[70]
-          lg:sticky lg:top-0 lg:h-screen lg:translate-x-0
-          ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"}
-        `}
+          className={`fixed top-0 left-0 bottom-0 w-72 bg-white dark:bg-brand-dark border-r border-border p-6 flex flex-col transition-transform duration-300 ease-in-out z-[70] lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 ${
+            isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
         >
           <div className="mb-10 px-4 mt-8 lg:mt-0">
-            <h1 className="font-heading text-2xl text-brand-primary hidden lg:block">
-              Clean Foods
+            <h1 className="font-syne text-2xl font-black text-brand-primary hidden lg:block uppercase tracking-tighter">
+              REGENESSA
             </h1>
-            <p className="text-[10px] font-bold uppercase tracking-widest opacity-40">
-              Admin Panel v1.0
+            <p className="text-[10px] font-jakarta font-bold uppercase tracking-widest opacity-40">
+              Clinical Control Panel
             </p>
           </div>
 
@@ -113,17 +113,19 @@ export default function AdminDashboard() {
                 <button
                   key={item.id}
                   onClick={() => handleMenuClick(item.id)}
-                  className={`w-full flex items-center justify-between px-4 py-3.5 rounded-2xl transition-all ${
+                  className={`w-full flex items-center justify-between px-4 py-3.5 rounded-sm transition-all ${
                     activeMenu === item.id
-                      ? "bg-brand-primary text-white shadow-lg shadow-brand-primary/20"
+                      ? "bg-brand-primary text-white shadow-lg"
                       : "text-foreground/60 hover:bg-brand-warm dark:hover:bg-white/5"
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <Icon size={20} />
-                    <span className="font-bold text-sm">{item.label}</span>
+                    <Icon size={18} />
+                    <span className="font-jakarta font-bold text-xs uppercase tracking-widest">
+                      {item.label}
+                    </span>
                   </div>
-                  {activeMenu === item.id && <ChevronRight size={16} />}
+                  {activeMenu === item.id && <ChevronRight size={14} />}
                 </button>
               );
             })}
@@ -131,29 +133,20 @@ export default function AdminDashboard() {
 
           <button
             onClick={logout}
-            className="flex items-center gap-3 px-4 py-4 text-red-500 font-bold text-sm mt-auto border-t border-border hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-all"
+            className="flex items-center gap-3 px-4 py-4 text-red-500 font-bold text-xs mt-auto border-t border-border hover:bg-red-50 rounded-sm transition-all"
           >
-            <LogOut size={20} />
-            Sign Out
+            <LogOut size={18} /> Sign Out
           </button>
         </aside>
 
-        {/* --- MOBILE OVERLAY --- */}
-        {isMobileMenuOpen && (
-          <div
-            className="lg:hidden fixed inset-0 bg-brand-dark/60 backdrop-blur-sm z-[65]"
-            onClick={() => setIsMobileMenuOpen(false)}
-          />
-        )}
-
-        {/* --- MAIN CONTENT --- */}
-        <main className="flex-1 p-6 lg:p-12 overflow-x-hidden">
-          <header className="mb-10">
-            <h2 className="font-heading text-3xl text-brand-dark dark:text-white capitalize">
+        {/* MAIN CONTENT */}
+        <main className="flex-1 p-6 lg:p-12 overflow-x-hidden pt-24 lg:pt-12">
+          <header className="mb-10 animate-page-reveal">
+            <h2 className="font-syne text-3xl font-bold text-brand-dark dark:text-white uppercase tracking-tighter">
               {menuItems.find((i) => i.id === activeMenu)?.label}
             </h2>
-            <p className="text-foreground/40 text-sm">
-              Managing your store essentials.
+            <p className="font-jakarta text-foreground/40 text-xs uppercase tracking-widest mt-1">
+              Regenessa Management Hub
             </p>
           </header>
 
@@ -161,6 +154,7 @@ export default function AdminDashboard() {
             {activeMenu === "products" && <ManageProducts />}
             {activeMenu === "messages" && <InquiryList />}
             {activeMenu === "overview" && <ManageOrders />}
+            {activeMenu === "consultations" && <ManageConsultations />}
           </div>
         </main>
       </div>

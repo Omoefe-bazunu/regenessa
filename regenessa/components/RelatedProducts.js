@@ -44,8 +44,8 @@ const RelatedProducts = ({ currentCategory, currentProductId }) => {
   if (!loading && related.length === 0) return null;
 
   return (
-    <section className="mt-32 pt-24 border-t border-brand-dark/5">
-      <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
+    <section className="mt-12 pt-24 border-t border-brand-dark/5">
+      <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-8">
         <div className="max-w-xl">
           <div className="flex items-center gap-3 mb-4">
             <Dna className="text-brand-primary opacity-50" size={20} />

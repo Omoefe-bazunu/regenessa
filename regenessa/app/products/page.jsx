@@ -65,16 +65,16 @@ export default function ProductsPage() {
       {/* HEADER SECTION */}
       <section className="bg-brand-section pt-12 pb-12 px-6 md:px-24 border-b border-brand-dark/5">
         <div className="max-w-7xl mx-auto animate-page-reveal">
-          <nav className="flex items-center gap-2 mb-6 font-jakarta text-[10px] font-black uppercase tracking-[0.3em] text-brand-primary/40">
-            <Link href="/" className="text-brand-dark transition-colors">
+          <nav className="flex items-center gap-2 mb-6 font-jakarta text-[10px] font-black uppercase tracking-[0.3em] text-brand-dark/40">
+            <Link href="/" className="transition-colors">
               Home
             </Link>
-            <span className=" text-brand-dark">|</span>
+            <span className="">|</span>
             <span className="text-brand-dark">Supplements</span>
           </nav>
 
           <h1 className="font-syne text-5xl md:text-7xl font-bold text-brand-dark tracking-tighter mb-12">
-            Products <span className="text-brand-primary">Catalog.</span>
+            Products <span className="text-brand-accent">Catalog.</span>
           </h1>
 
           <div className="flex flex-col gap-8 ">

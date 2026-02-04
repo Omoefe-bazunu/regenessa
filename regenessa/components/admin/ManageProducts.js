@@ -12,22 +12,18 @@ import {
   Image as ImageIcon,
   UploadCloud,
   Film,
-  MapPin,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
-
-const UNIT_OPTIONS = ["kg", "tubers", "basket", "sack", "bag", "rubber"];
 
 export default function ManageProducts() {
   const [tab, setTab] = useState("list");
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0); // New State
-  const [timeLeft, setTimeLeft] = useState(null); // New State
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [currentProduct, setCurrentProduct] = useState(null);
 
-  // Separate File States
   const [mainImage, setMainImage] = useState(null);
   const [extraImage1, setExtraImage1] = useState(null);
   const [extraImage2, setExtraImage2] = useState(null);
@@ -37,12 +33,13 @@ export default function ManageProducts() {
     name: "",
     category: "",
     price: "",
-    unit: "bag",
-    stock: "",
-    moq: "1",
-    locations: "",
+    shortDescription: "",
     description: "",
-    status: "active",
+    benefits: "",
+    targetAilments: "",
+    stockCount: "",
+    status: "In Stock",
+    featured: false,
   });
 
   useEffect(() => {
@@ -66,12 +63,13 @@ export default function ManageProducts() {
       name: "",
       category: "",
       price: "",
-      unit: "bag",
-      stock: "",
-      moq: "1",
-      locations: "",
+      shortDescription: "",
       description: "",
-      status: "active",
+      benefits: "",
+      targetAilments: "",
+      stockCount: "",
+      status: "In Stock",
+      featured: false,
     });
     setMainImage(null);
     setExtraImage1(null);
@@ -82,7 +80,6 @@ export default function ManageProducts() {
     setTimeLeft(null);
   };
 
-  // Helper function for Upload Progress logic
   const uploadConfig = (startTime) => ({
     headers: { "Content-Type": "multipart/form-data" },
     onUploadProgress: (progressEvent) => {
@@ -91,7 +88,6 @@ export default function ManageProducts() {
       );
       setUploadProgress(percentCompleted);
 
-      // Estimate time left
       const elapsedTime = (Date.now() - startTime) / 1000;
       if (percentCompleted > 0) {
         const totalTime = (elapsedTime * 100) / percentCompleted;
@@ -178,17 +174,24 @@ export default function ManageProducts() {
 
   return (
     <div className="space-y-8 animate-fade-in">
-      {/* Tabs */}
       <div className="flex gap-4 p-1.5 bg-brand-warm dark:bg-white/5 w-fit rounded-2xl border border-border">
         <button
           onClick={() => setTab("list")}
-          className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${tab === "list" ? "bg-white dark:bg-brand-dark shadow-md text-brand-primary" : "text-foreground/40"}`}
+          className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${
+            tab === "list"
+              ? "bg-white dark:bg-brand-dark shadow-md text-brand-primary"
+              : "text-foreground/40"
+          }`}
         >
           <ListFilter size={18} /> View All
         </button>
         <button
           onClick={() => setTab("add")}
-          className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${tab === "add" ? "bg-white dark:bg-brand-dark shadow-md text-brand-primary" : "text-foreground/40"}`}
+          className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${
+            tab === "add"
+              ? "bg-white dark:bg-brand-dark shadow-md text-brand-primary"
+              : "text-foreground/40"
+          }`}
         >
           <Plus size={18} /> Add New
         </button>
@@ -199,7 +202,6 @@ export default function ManageProducts() {
           onSubmit={handleSubmit}
           className="bg-white dark:bg-brand-dark p-8 md:p-10 rounded-[2.5rem] border border-border shadow-sm space-y-8 max-w-6xl mx-auto"
         >
-          {/* Progress Indicator Overlay */}
           {loading && uploadProgress > 0 && (
             <div className="fixed inset-0 z-[110] bg-brand-dark/60 backdrop-blur-md flex items-center justify-center p-6">
               <div className="bg-white dark:bg-brand-dark w-full max-w-md p-8 rounded-3xl border border-white/10 text-center shadow-2xl">
@@ -226,7 +228,6 @@ export default function ManageProducts() {
             </div>
           )}
 
-          {/* Media Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="relative h-40 border-2 border-dashed border-brand-primary/30 rounded-2xl flex items-center justify-center bg-brand-warm/30 overflow-hidden">
               {mainImage ? (
@@ -300,7 +301,7 @@ export default function ManageProducts() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <input
               required
               value={formData.name}
@@ -329,47 +330,51 @@ export default function ManageProducts() {
               className={inputClass}
               placeholder="Price (₦)"
             />
-            <select
-              value={formData.unit}
+            <input
+              type="number"
+              value={formData.stockCount}
               onChange={(e) =>
-                setFormData({ ...formData, unit: e.target.value })
+                setFormData({ ...formData, stockCount: e.target.value })
+              }
+              className={inputClass}
+              placeholder="Stock Count"
+            />
+            <select
+              value={formData.status}
+              onChange={(e) =>
+                setFormData({ ...formData, status: e.target.value })
               }
               className={inputClass}
             >
-              {UNIT_OPTIONS.map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt}
-                </option>
-              ))}
+              <option value="In Stock">In Stock</option>
+              <option value="Out of Stock">Out of Stock</option>
+              <option value="Pre-Order">Pre-Order</option>
             </select>
-            <input
-              type="number"
-              value={formData.stock}
-              onChange={(e) =>
-                setFormData({ ...formData, stock: e.target.value })
-              }
-              className={inputClass}
-              placeholder="Stock"
-            />
-            <input
-              type="number"
-              value={formData.moq}
-              onChange={(e) =>
-                setFormData({ ...formData, moq: e.target.value })
-              }
-              className={inputClass}
-              placeholder="MOQ"
-            />
+            <label className="flex items-center gap-3 px-5 py-4 bg-brand-warm dark:bg-white/5 border border-border dark:border-white/10 rounded-2xl cursor-pointer">
+              <input
+                type="checkbox"
+                checked={formData.featured}
+                onChange={(e) =>
+                  setFormData({ ...formData, featured: e.target.checked })
+                }
+                className="w-5 h-5 accent-brand-primary"
+              />
+              <span className="text-sm font-medium dark:text-white">
+                Featured Product
+              </span>
+            </label>
           </div>
-          <input
-            required
-            value={formData.locations}
+
+          <textarea
+            rows="2"
+            value={formData.shortDescription}
             onChange={(e) =>
-              setFormData({ ...formData, locations: e.target.value })
+              setFormData({ ...formData, shortDescription: e.target.value })
             }
-            className={inputClass}
-            placeholder="Supply Locations"
+            className={inputClass + " resize-none"}
+            placeholder="Short Description"
           />
+
           <textarea
             rows="4"
             value={formData.description}
@@ -377,7 +382,27 @@ export default function ManageProducts() {
               setFormData({ ...formData, description: e.target.value })
             }
             className={inputClass + " resize-none"}
-            placeholder="Description..."
+            placeholder="Full Description"
+          />
+
+          <textarea
+            rows="3"
+            value={formData.benefits}
+            onChange={(e) =>
+              setFormData({ ...formData, benefits: e.target.value })
+            }
+            className={inputClass + " resize-none"}
+            placeholder="Benefits (comma-separated)"
+          />
+
+          <textarea
+            rows="3"
+            value={formData.targetAilments}
+            onChange={(e) =>
+              setFormData({ ...formData, targetAilments: e.target.value })
+            }
+            className={inputClass + " resize-none"}
+            placeholder="Target Ailments (comma-separated)"
           />
 
           <button
@@ -396,6 +421,7 @@ export default function ManageProducts() {
               <tr>
                 <th className="px-8 py-4">Product</th>
                 <th className="px-8 py-4 text-center">Price</th>
+                <th className="px-8 py-4 text-center">Stock</th>
                 <th className="px-8 py-4 text-right">Actions</th>
               </tr>
             </thead>
@@ -420,6 +446,9 @@ export default function ManageProducts() {
                   </td>
                   <td className="px-8 py-4 text-center text-sm font-medium">
                     ₦{prod.price?.toLocaleString()}
+                  </td>
+                  <td className="px-8 py-4 text-center text-sm">
+                    {prod.stockCount || 0}
                   </td>
                   <td className="px-8 py-4 text-right">
                     <button
@@ -457,7 +486,6 @@ export default function ManageProducts() {
           setFormData={setFormData}
           onUpdate={handleUpdate}
           loading={loading}
-          UNIT_OPTIONS={UNIT_OPTIONS}
           inputClass={inputClass}
           mainImage={mainImage}
           setMainImage={setMainImage}
@@ -467,8 +495,8 @@ export default function ManageProducts() {
           setExtraImage2={setExtraImage2}
           videoFile={videoFile}
           setVideoFile={setVideoFile}
-          uploadProgress={uploadProgress} // Pass progress to modal
-          timeLeft={timeLeft} // Pass time to modal
+          uploadProgress={uploadProgress}
+          timeLeft={timeLeft}
         />
       )}
     </div>

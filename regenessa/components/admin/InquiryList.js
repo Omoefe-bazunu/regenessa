@@ -5,16 +5,19 @@ import {
   Mail,
   Calendar,
   User,
-  Building2,
   Loader2,
-  CheckCircle2,
-  Clock,
+  ChevronDown,
+  ChevronUp,
+  MessageSquare,
+  Phone,
+  Inbox,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
 
 export default function InquiryList() {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [expandedId, setExpandedId] = useState(null);
 
   useEffect(() => {
     fetchMessages();
@@ -25,71 +28,132 @@ export default function InquiryList() {
       const { data } = await api.get("/contact");
       setMessages(data);
     } catch (err) {
-      toast.error("Could not load messages");
+      toast.error("Could not load clinical inquiries");
     } finally {
       setLoading(false);
     }
   };
 
+  const toggleExpand = (id) => {
+    setExpandedId(expandedId === id ? null : id);
+  };
+
   if (loading)
     return (
       <div className="flex justify-center py-20">
-        <Loader2 className="animate-spin text-brand-primary" />
+        <Loader2 className="animate-spin text-brand-primary" size={32} />
       </div>
     );
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {messages.length === 0 ? (
-          <div className="col-span-full py-20 text-center border-2 border-dashed border-border rounded-[3rem]">
-            <p className="text-foreground/30 font-bold uppercase tracking-widest">
-              No messages yet
-            </p>
-          </div>
-        ) : (
-          messages.map((msg) => (
-            <div
-              key={msg.id}
-              className="bg-white dark:bg-brand-dark p-8 rounded-[2.5rem] border border-border shadow-sm hover:border-brand-primary/30 transition-all group"
-            >
-              <div className="flex justify-between items-start mb-6">
-                <div className="p-3 bg-brand-primary/10 rounded-2xl text-brand-primary">
-                  <Mail size={20} />
-                </div>
-                <span
-                  className={`text-[10px] font-bold uppercase px-3 py-1 rounded-full ${msg.status === "unread" ? "bg-amber-100 text-amber-600" : "bg-green-100 text-green-600"}`}
+    <div className="animate-page-reveal">
+      {messages.length === 0 ? (
+        <div className="py-20 text-center border border-dashed border-brand-dark/10 rounded-sm bg-brand-warm/30">
+          <Inbox className="mx-auto text-brand-dark/10 mb-4" size={48} />
+          <p className="text-brand-dark/30 font-jakarta font-black text-[10px] uppercase tracking-widest">
+            No inquiries logged in the registry.
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {messages.map((msg) => {
+            const isExpanded = expandedId === msg.id;
+
+            return (
+              <div
+                key={msg.id}
+                className={`bg-white dark:bg-brand-dark border border-brand-dark/5 transition-all duration-300 ${
+                  isExpanded
+                    ? "shadow-lg scale-[1.01]"
+                    : "hover:bg-brand-warm/50"
+                }`}
+              >
+                {/* COMPACT HEADER */}
+                <button
+                  onClick={() => toggleExpand(msg.id)}
+                  className="w-full flex items-center justify-between p-5 text-left"
                 >
-                  {msg.status}
-                </span>
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <h4 className="font-heading text-xl text-brand-dark dark:text-white line-clamp-1">
-                    {msg.businessName}
-                  </h4>
-                  <div className="flex items-center gap-2 text-xs text-foreground/40 mt-1">
-                    <User size={12} />
-                    <span>{msg.name}</span>
+                  <div className="flex items-center gap-6">
+                    <div
+                      className={`p-2 rounded-full ${
+                        isExpanded
+                          ? "bg-brand-primary text-white"
+                          : "bg-brand-primary/10 text-brand-primary"
+                      }`}
+                    >
+                      <Mail size={16} />
+                    </div>
+                    <div>
+                      <h4 className="font-syne font-bold text-sm text-brand-dark dark:text-white leading-none">
+                        {msg.name}
+                      </h4>
+                      <p className="text-[9px] font-black text-brand-primary uppercase tracking-widest mt-1">
+                        Received: {new Date(msg.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
                   </div>
-                </div>
 
-                <p className="text-sm text-foreground/70 line-clamp-3 italic">
-                  &quot;{msg.message}&quot;
-                </p>
-
-                <div className="pt-6 border-t border-border flex justify-between items-center">
-                  <div className="flex items-center gap-2 text-[10px] font-bold text-foreground/30 uppercase">
-                    <Calendar size={12} />
-                    {new Date(msg.createdAt).toLocaleDateString()}
+                  <div className="flex items-center gap-4">
+                    <span className="hidden md:block text-[10px] font-jakarta font-bold text-brand-dark/30 uppercase tracking-widest">
+                      {msg.email}
+                    </span>
+                    {isExpanded ? (
+                      <ChevronUp size={16} className="text-brand-dark/20" />
+                    ) : (
+                      <ChevronDown size={16} className="text-brand-dark/20" />
+                    )}
                   </div>
-                </div>
+                </button>
+
+                {/* EXPANDABLE BODY */}
+                {isExpanded && (
+                  <div className="px-5 pb-8 pt-2 border-t border-brand-dark/5 animate-in fade-in slide-in-from-top-2 duration-300">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                      <div className="space-y-1">
+                        <p className="text-[8px] font-black uppercase tracking-tighter text-brand-primary">
+                          Email Access
+                        </p>
+                        <p className="text-xs font-bold text-brand-dark dark:text-white">
+                          {msg.email}
+                        </p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-[8px] font-black uppercase tracking-tighter text-brand-primary">
+                          Direct Contact
+                        </p>
+                        <p className="text-xs font-bold text-brand-dark dark:text-white">
+                          {msg.phone || "Not Provided"}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="bg-brand-warm/30 dark:bg-white/5 p-6 rounded-sm border border-brand-dark/5">
+                      <div className="flex gap-4">
+                        <MessageSquare
+                          size={16}
+                          className="text-brand-primary shrink-0 mt-1"
+                        />
+                        <p className="font-jakarta text-sm text-brand-dark/70 dark:text-white/70 leading-relaxed italic">
+                          &quot;{msg.message}&quot;
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="mt-6 flex justify-end gap-4">
+                      <a
+                        href={`mailto:${msg.email}`}
+                        className="px-6 py-3 bg-brand-dark text-white text-[9px] font-black uppercase tracking-widest hover:bg-brand-primary transition-colors"
+                      >
+                        Send Email Reply
+                      </a>
+                    </div>
+                  </div>
+                )}
               </div>
-            </div>
-          ))
-        )}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

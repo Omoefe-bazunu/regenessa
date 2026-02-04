@@ -69,7 +69,7 @@ export default function CartPage() {
   }
 
   return (
-    <main className="min-h-screen bg-brand-warm dark:bg-brand-dark pt-12 pb-20">
+    <main className="min-h-screen bg-brand-warm pt-12 pb-20">
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex items-center gap-4 mb-12">
           <Link
@@ -89,7 +89,7 @@ export default function CartPage() {
             {cart.map((item) => (
               <div
                 key={item.productId}
-                className="bg-white dark:bg-brand-dark p-6 rounded-[2.5rem] border border-border flex flex-col sm:flex-row items-center gap-6 group"
+                className="bg-brand-warm p-6 rounded-[2.5rem] border border-border flex flex-col sm:flex-row items-center gap-6 group"
               >
                 <div className="relative h-32 w-32 rounded-3xl overflow-hidden flex-shrink-0">
                   <Image
@@ -150,7 +150,7 @@ export default function CartPage() {
           </div>
 
           {/* Summary Sidebar */}
-          <aside className="bg-white dark:bg-brand-dark p-10 rounded-[3rem] shadow-2xl sticky top-32 border border-border">
+          <aside className="bg-brand-warm p-10 rounded-[3rem] shadow-2xl sticky top-32 border border-border">
             <h3 className="font-heading text-2xl mb-8 text-brand-dark dark:text-white">
               Summary
             </h3>
@@ -182,7 +182,7 @@ export default function CartPage() {
             </div>
             <Link
               href="/checkout"
-              className="w-full py-5 bg-brand-primary text-white rounded-2xl font-bold flex items-center justify-center gap-3 hover:scale-[1.02] transition-all shadow-xl shadow-brand-primary/20"
+              className="w-full py-5 bg-brand-dark text-brand-warm rounded-2xl font-bold flex items-center justify-center gap-3 hover:scale-[1.02] transition-all shadow-xl shadow-brand-primary/20"
             >
               <CreditCard size={20} />
               Proceed to Checkout

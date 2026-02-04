@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import Image from "next/image";
-import { X, Save, Loader2, UploadCloud, Film, ImageIcon } from "lucide-react";
+import { X, Save, Loader2, UploadCloud, Film } from "lucide-react";
 
 export default function EditProductModal({
   isOpen,
@@ -10,7 +10,6 @@ export default function EditProductModal({
   setFormData,
   onUpdate,
   loading,
-  UNIT_OPTIONS,
   inputClass,
   mainImage,
   setMainImage,
@@ -21,7 +20,6 @@ export default function EditProductModal({
   videoFile,
   setVideoFile,
 }) {
-  // CRITICAL: Block rendering if formData is not yet populated
   if (!isOpen || !formData) return null;
 
   return (
@@ -42,7 +40,6 @@ export default function EditProductModal({
         </div>
 
         <form onSubmit={onUpdate} className="space-y-5">
-          {/* Main Image Safe-Guard */}
           <div className="relative h-44 border-2 border-dashed border-border rounded-2xl bg-gray-50 overflow-hidden group">
             <Image
               src={
@@ -65,7 +62,6 @@ export default function EditProductModal({
             />
           </div>
 
-          {/* Extra Media Grid - NOW WITH 3 SLOTS */}
           <div className="grid grid-cols-3 gap-4">
             <div className="relative h-24 border border-dashed border-border rounded-xl bg-gray-50 flex items-center justify-center overflow-hidden">
               <Image
@@ -145,47 +141,48 @@ export default function EditProductModal({
                 className={inputClass}
                 placeholder="Price (₦)"
               />
-              <select
-                value={formData?.unit || "bag"}
-                onChange={(e) =>
-                  setFormData({ ...formData, unit: e.target.value })
-                }
-                className={inputClass}
-              >
-                {UNIT_OPTIONS.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
               <input
                 type="number"
-                value={formData?.stock || ""}
+                value={formData?.stockCount || ""}
                 onChange={(e) =>
-                  setFormData({ ...formData, stock: e.target.value })
+                  setFormData({ ...formData, stockCount: e.target.value })
                 }
                 className={inputClass}
-                placeholder="Stock"
-              />
-              <input
-                type="number"
-                value={formData?.moq || ""}
-                onChange={(e) =>
-                  setFormData({ ...formData, moq: e.target.value })
-                }
-                className={inputClass}
-                placeholder="MOQ"
+                placeholder="Stock Count"
               />
             </div>
-            <input
-              value={formData?.locations || ""}
+            <select
+              value={formData?.status || "In Stock"}
               onChange={(e) =>
-                setFormData({ ...formData, locations: e.target.value })
+                setFormData({ ...formData, status: e.target.value })
               }
               className={inputClass}
-              placeholder="Supply Locations"
+            >
+              <option value="In Stock">In Stock</option>
+              <option value="Out of Stock">Out of Stock</option>
+              <option value="Pre-Order">Pre-Order</option>
+            </select>
+            <label className="flex items-center gap-3 px-5 py-4 bg-brand-warm dark:bg-white/5 border border-border dark:border-white/10 rounded-2xl cursor-pointer">
+              <input
+                type="checkbox"
+                checked={formData?.featured || false}
+                onChange={(e) =>
+                  setFormData({ ...formData, featured: e.target.checked })
+                }
+                className="w-5 h-5 accent-brand-primary"
+              />
+              <span className="text-sm font-medium dark:text-white">
+                Featured Product
+              </span>
+            </label>
+            <textarea
+              rows="2"
+              value={formData?.shortDescription || ""}
+              onChange={(e) =>
+                setFormData({ ...formData, shortDescription: e.target.value })
+              }
+              className={inputClass + " resize-none"}
+              placeholder="Short Description"
             />
             <textarea
               rows="4"
@@ -194,7 +191,25 @@ export default function EditProductModal({
                 setFormData({ ...formData, description: e.target.value })
               }
               className={inputClass + " resize-none"}
-              placeholder="Description"
+              placeholder="Full Description"
+            />
+            <textarea
+              rows="3"
+              value={formData?.benefits || ""}
+              onChange={(e) =>
+                setFormData({ ...formData, benefits: e.target.value })
+              }
+              className={inputClass + " resize-none"}
+              placeholder="Benefits (comma-separated)"
+            />
+            <textarea
+              rows="3"
+              value={formData?.targetAilments || ""}
+              onChange={(e) =>
+                setFormData({ ...formData, targetAilments: e.target.value })
+              }
+              className={inputClass + " resize-none"}
+              placeholder="Target Ailments (comma-separated)"
             />
           </div>
 
