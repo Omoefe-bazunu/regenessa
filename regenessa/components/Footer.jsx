@@ -125,7 +125,7 @@ const Footer = () => {
                 Consultation
               </span>
               <span className="text-xs font-bold text-white">
-                +234 (0) 800 REGEN
+                +234 (0) 8142081020
               </span>
             </div>
           </div>
