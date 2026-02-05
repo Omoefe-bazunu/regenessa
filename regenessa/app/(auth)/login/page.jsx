@@ -25,7 +25,7 @@ export default function LoginPage() {
         <div className="text-center mb-10">
           <h1 className="font-heading text-3xl mb-2">Welcome Back</h1>
           <p className="text-foreground/60 text-sm">
-            Log in to manage your bulk orders
+            Log in to raise orders and share reviews
           </p>
         </div>
 

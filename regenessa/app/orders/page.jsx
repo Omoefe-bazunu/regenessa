@@ -90,7 +90,7 @@ export default function OrdersPage() {
             </p>
             <Link
               href="/products"
-              className="mt-8 inline-flex items-center gap-3 px-8 py-4 bg-brand-dark text-warm font-black text-[10px] uppercase tracking-widest hover:bg-brand-dark transition-all"
+              className="mt-8 inline-flex items-center gap-3 px-8 py-4 bg-brand-dark text-brand-warm font-black text-[10px] uppercase tracking-widest hover:bg-brand-dark transition-all"
             >
               Explore Products
             </Link>

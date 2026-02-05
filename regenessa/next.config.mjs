@@ -1,11 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactCompiler: true,
+  trailingSlash: true,
   images: {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "**.unsplash.com", // Catch all Unsplash subdomains
+        hostname: "**.unsplash.com",
       },
       {
         protocol: "https",

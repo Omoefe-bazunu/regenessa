@@ -26,7 +26,7 @@ export default function SignupPage() {
         <div className="text-center mb-10">
           <h1 className="font-heading text-3xl mb-2">Create Account</h1>
           <p className="text-foreground/60 text-sm">
-            Join Clean Foods for wholesale prices
+            Create an account for free
           </p>
         </div>
 
