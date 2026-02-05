@@ -36,9 +36,8 @@ export default function ProductDetails({ params }) {
 
   const { addToCart } = useCart();
   const { user } = useAuth();
-  const hasLogged = useRef(false);
 
-  // 1. DATA FETCHING EFFECT
+  //DATA FETCHING EFFECT
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -54,19 +53,6 @@ export default function ProductDetails({ params }) {
     };
     fetchProduct();
   }, [productId]);
-
-  // 2. SEPARATE ANALYTICS EFFECT (Fixes Duplication & Error Toast)
-  useEffect(() => {
-    // Only fire if product is loaded and has a name
-    if (product && product.id && product.name) {
-      api
-        .post("/analytics/log", {
-          productId: product.id,
-          productName: product.name,
-        })
-        .catch((err) => console.error("Analytics failed", err));
-    }
-  }, [product?.id]);
 
   const handleAddToCart = () => {
     if (!user) {
@@ -99,7 +85,7 @@ export default function ProductDetails({ params }) {
     <main className="min-h-screen bg-brand-warm pt-12 pb-20 transition-all">
       {/* --- LOGIN MODAL --- */}
       {showLoginModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center px-6 backdrop-blur-md bg-brand-dark/40">
+        <div className="fixed inset-0 z-100 flex items-center justify-center px-6 backdrop-blur-md bg-brand-dark/40">
           <div className="bg-white p-10 rounded-sm border border-brand-dark/10 shadow-2xl text-center max-w-sm w-full animate-page-reveal">
             <Lock className="mx-auto mb-6 text-brand-primary" size={32} />
             <h3 className="font-syne text-xl font-bold mb-4 uppercase tracking-tight">
@@ -129,7 +115,7 @@ export default function ProductDetails({ params }) {
       {/* --- VIDEO MODAL --- */}
       {showVideo && product.videoUrl && (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center px-6 backdrop-blur-md bg-brand-dark/80"
+          className="fixed inset-0 z-100 flex items-center justify-center px-6 backdrop-blur-md bg-brand-dark/80"
           onClick={() => setShowVideo(false)}
         >
           <div className="relative w-full max-w-4xl aspect-video bg-black rounded-lg overflow-hidden">

@@ -63,7 +63,7 @@ const ProductSection = () => {
             [...Array(6)].map((_, i) => (
               <div
                 key={i}
-                className="h-[400px] w-full bg-foreground/5 animate-pulse rounded-sm"
+                className="h-100 w-full bg-foreground/5 animate-pulse rounded-sm"
               />
             ))
           ) : error ? (
