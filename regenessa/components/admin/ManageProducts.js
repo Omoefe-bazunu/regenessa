@@ -415,61 +415,77 @@ export default function ManageProducts() {
           </button>
         </form>
       ) : (
-        <div className="bg-white dark:bg-brand-dark rounded-[2.5rem] border border-border overflow-hidden">
-          <table className="w-full text-left">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left min-w-[640px]">
             <thead className="bg-brand-warm/50 border-b border-border text-[10px] uppercase font-bold opacity-50">
               <tr>
-                <th className="px-8 py-4">Product</th>
-                <th className="px-8 py-4 text-center">Price</th>
-                <th className="px-8 py-4 text-center">Stock</th>
-                <th className="px-8 py-4 text-right">Actions</th>
+                <th className="px-4 md:px-8 py-4">Product</th>
+                <th className="px-4 md:px-8 py-4 text-center">Price</th>
+                <th className="px-4 md:px-8 py-4 text-center">Stock</th>
+                <th className="px-4 md:px-8 py-4 text-right">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {products.map((prod) => (
-                <tr
-                  key={prod.id}
-                  className="border-b border-border/50 hover:bg-brand-warm/10 transition-colors"
-                >
-                  <td className="px-8 py-4 flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gray-100 rounded-lg overflow-hidden relative">
-                      {prod.imageUrl && (
-                        <Image
-                          src={prod.imageUrl}
-                          alt=""
-                          fill
-                          className="object-cover"
-                        />
-                      )}
-                    </div>
-                    <span className="font-bold text-sm">{prod.name}</span>
-                  </td>
-                  <td className="px-8 py-4 text-center text-sm font-medium">
-                    ₦{prod.price?.toLocaleString()}
-                  </td>
-                  <td className="px-8 py-4 text-center text-sm">
-                    {prod.stockCount || 0}
-                  </td>
-                  <td className="px-8 py-4 text-right">
-                    <button
-                      onClick={() => {
-                        setFormData({ ...prod });
-                        setCurrentProduct(prod);
-                        setIsEditModalOpen(true);
-                      }}
-                      className="p-2 text-brand-primary hover:bg-brand-primary/10 rounded-lg mr-2 transition-all"
-                    >
-                      <Edit3 size={18} />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(prod.id)}
-                      className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-all"
-                    >
-                      <Trash2 size={18} />
-                    </button>
+              {products.length === 0 ? (
+                <tr>
+                  <td colSpan="4" className="px-8 py-12 text-center opacity-50">
+                    No products yet. Add your first product!
                   </td>
                 </tr>
-              ))}
+              ) : (
+                products.map((prod) => (
+                  <tr
+                    key={prod.id}
+                    className="border-b border-border/50 hover:bg-brand-warm/10 transition-colors"
+                  >
+                    <td className="px-4 md:px-8 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-gray-100 rounded-lg overflow-hidden relative shrink-0">
+                          {prod.imageUrl && (
+                            <Image
+                              src={prod.imageUrl}
+                              alt=""
+                              fill
+                              className="object-cover"
+                            />
+                          )}
+                        </div>
+                        <span className="font-bold text-sm line-clamp-2">
+                          {prod.name}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-4 md:px-8 py-4 text-center text-sm font-medium whitespace-nowrap">
+                      ₦{prod.price?.toLocaleString()}
+                    </td>
+                    <td className="px-4 md:px-8 py-4 text-center text-sm">
+                      {prod.stockCount || 0}
+                    </td>
+                    <td className="px-4 md:px-8 py-4 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => {
+                            setFormData({ ...prod });
+                            setCurrentProduct(prod);
+                            setIsEditModalOpen(true);
+                          }}
+                          className="p-2 text-brand-primary hover:bg-brand-primary/10 rounded-lg transition-all"
+                          aria-label="Edit product"
+                        >
+                          <Edit3 size={18} />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(prod.id)}
+                          className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                          aria-label="Delete product"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
