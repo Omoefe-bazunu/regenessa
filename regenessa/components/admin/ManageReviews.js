@@ -105,7 +105,6 @@ export default function AdminReviews() {
       review.email?.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
-  // Get product name by ID
   const getProductName = (productId) => {
     const product = products.find((p) => p.id === productId);
     return product?.name || "Unknown Product";
@@ -152,81 +151,101 @@ export default function AdminReviews() {
           <Loader2 className="animate-spin text-brand-primary" size={40} />
         </div>
       ) : (
-        <div className="bg-white dark:bg-brand-dark rounded-[2.5rem] border border-border overflow-hidden">
-          <table className="w-full text-left">
-            <thead className="bg-brand-warm/50 border-b border-border text-[10px] uppercase font-bold opacity-50">
-              <tr>
-                <th className="px-8 py-4">Product</th>
-                <th className="px-8 py-4">Customer</th>
-                <th className="px-8 py-4">Rating</th>
-                <th className="px-8 py-4">Review</th>
-                <th className="px-8 py-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredReviews.length === 0 ? (
+        <div className="bg-white dark:bg-brand-dark rounded-xl border border-border overflow-hidden">
+          {/* Mobile: Scrollable wrapper */}
+          <div className="overflow-x-auto">
+            <table className="w-full text-left min-w-[800px]">
+              <thead className="bg-brand-warm/50 border-b border-border text-[10px] uppercase font-bold opacity-50">
                 <tr>
-                  <td colSpan="5" className="px-8 py-12 text-center opacity-50">
-                    No reviews found
-                  </td>
+                  <th className="px-4 md:px-8 py-4">Product</th>
+                  <th className="px-4 md:px-8 py-4">Customer</th>
+                  <th className="px-4 md:px-8 py-4">Rating</th>
+                  <th className="px-4 md:px-8 py-4">Review</th>
+                  <th className="px-4 md:px-8 py-4 text-right">Actions</th>
                 </tr>
-              ) : (
-                filteredReviews.map((review) => (
-                  <tr
-                    key={review.id}
-                    className="border-b border-border/50 hover:bg-brand-warm/10 transition-colors"
-                  >
-                    <td className="px-8 py-4">
-                      <span className="font-bold text-sm">
-                        {getProductName(review.productId)}
-                      </span>
-                    </td>
-                    <td className="px-8 py-4">
-                      <div>
-                        <p className="font-bold text-sm">{review.fullName}</p>
-                        <p className="text-xs opacity-50">{review.email}</p>
-                      </div>
-                    </td>
-                    <td className="px-8 py-4">
-                      <div className="flex items-center gap-1">
-                        {[...Array(5)].map((_, i) => (
-                          <Star
-                            key={i}
-                            size={14}
-                            className={
-                              i < review.rating
-                                ? "fill-brand-primary text-brand-primary"
-                                : "text-brand-dark/20"
-                            }
-                          />
-                        ))}
-                      </div>
-                    </td>
-                    <td className="px-8 py-4">
-                      <p className="text-sm line-clamp-2 max-w-md">
-                        {review.statement}
-                      </p>
-                    </td>
-                    <td className="px-8 py-4 text-right">
-                      <button
-                        onClick={() => handleDelete(review.id)}
-                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-all"
-                      >
-                        <Trash2 size={18} />
-                      </button>
+              </thead>
+              <tbody>
+                {filteredReviews.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan="5"
+                      className="px-8 py-12 text-center opacity-50"
+                    >
+                      No reviews found
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : (
+                  filteredReviews.map((review) => (
+                    <tr
+                      key={review.id}
+                      className="border-b border-border/50 hover:bg-brand-warm/10 transition-colors"
+                    >
+                      <td className="px-4 md:px-8 py-4">
+                        <span className="font-bold text-sm line-clamp-2">
+                          {getProductName(review.productId)}
+                        </span>
+                      </td>
+                      <td className="px-4 md:px-8 py-4">
+                        <div>
+                          <p className="font-bold text-sm whitespace-nowrap">
+                            {review.fullName}
+                          </p>
+                          <p className="text-xs opacity-50 truncate max-w-[150px]">
+                            {review.email}
+                          </p>
+                        </div>
+                      </td>
+                      <td className="px-4 md:px-8 py-4">
+                        <div className="flex items-center gap-1">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              size={14}
+                              className={
+                                i < review.rating
+                                  ? "fill-brand-primary text-brand-primary"
+                                  : "text-brand-dark/20"
+                              }
+                            />
+                          ))}
+                        </div>
+                      </td>
+                      <td className="px-4 md:px-8 py-4">
+                        <p className="text-sm line-clamp-2 max-w-xs">
+                          {review.statement}
+                        </p>
+                      </td>
+                      <td className="px-4 md:px-8 py-4 text-right">
+                        <button
+                          onClick={() => handleDelete(review.id)}
+                          className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                          aria-label="Delete review"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile scroll hint */}
+          {filteredReviews.length > 0 && (
+            <div className="md:hidden p-4 text-center border-t border-border">
+              <p className="text-xs text-brand-dark/40 font-medium">
+                ← Swipe to see all columns →
+              </p>
+            </div>
+          )}
         </div>
       )}
 
       {/* Add Review Modal */}
       {showAddModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center px-6 backdrop-blur-md bg-brand-dark/40">
-          <div className="bg-white dark:bg-brand-dark p-10 rounded-3xl border border-border shadow-2xl max-w-2xl w-full animate-page-reveal">
+          <div className="bg-white dark:bg-brand-dark p-10 rounded-3xl border border-border shadow-2xl max-w-2xl w-full animate-page-reveal max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-8">
               <h3 className="font-heading text-2xl dark:text-white">
                 Add New Review
