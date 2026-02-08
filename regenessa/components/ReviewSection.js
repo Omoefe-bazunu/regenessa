@@ -69,7 +69,7 @@ const ReviewSection = ({ productId }) => {
       <div className="flex items-center gap-4 mb-12">
         <MessageSquare className="text-brand-primary" size={24} />
         <h2 className="font-syne text-3xl font-bold text-brand-dark">
-          Patient Testimonials
+          Product Reviews<span className="text-brand-accent">.</span>
         </h2>
       </div>
 
@@ -117,8 +117,7 @@ const ReviewSection = ({ productId }) => {
               type="submit"
               className="bg-brand-primary text-white px-8 py-3 text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:bg-brand-dark transition-all"
             >
-              {editingId ? "Update Review" : "Post Testimony"}{" "}
-              <Send size={14} />
+              {editingId ? "Update Review" : "Post Review"} <Send size={14} />
             </button>
             {editingId && (
               <button
@@ -139,7 +138,7 @@ const ReviewSection = ({ productId }) => {
       {/* REVIEWS LIST */}
       <div className="space-y-8">
         {loading ? (
-          <p className="animate-pulse">Loading clinical data...</p>
+          <p className="animate-pulse">Loading Reviews...</p>
         ) : reviews.length > 0 ? (
           reviews.map((rev) => (
             <div
@@ -191,7 +190,7 @@ const ReviewSection = ({ productId }) => {
               </p>
               <span className="block mt-4 text-[9px] font-black text-brand-dark/20 uppercase tracking-widest">
                 {new Date(rev.createdAt).toLocaleDateString()} • Verified
-                Regimen
+                Product
               </span>
             </div>
           ))

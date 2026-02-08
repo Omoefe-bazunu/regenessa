@@ -54,7 +54,8 @@ const RelatedProducts = ({ currentCategory, currentProductId }) => {
             </span>
           </div>
           <h2 className="font-syne text-3xl md:text-4xl font-bold text-brand-dark leading-[1.1]">
-            Complementary <br /> Clinical Regimens.
+            Related
+            <br /> Products
           </h2>
         </div>
       </div>

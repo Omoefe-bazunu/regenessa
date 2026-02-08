@@ -40,7 +40,7 @@ const ProductSection = () => {
               Regenessa Solutions
             </span>
             <h2 className="font-syne text-3xl md:text-4xl font-bold text-brand-dark mb-6 leading-[1.1]">
-              Natural Supplements for <br /> Cellular Longevity.
+              Natural Supplements <br /> for Cellular Longevity.
             </h2>
           </div>
 
