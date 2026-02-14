@@ -1,0 +1,7 @@
+runConfig:
+  cpu: 1
+  memoryMiB: 512
+env:
+  - variable: NEXT_PUBLIC_BACKEND_URL
+    value: "https://regenessa-backend.onrender.com/api"
+    availability: ["BUILD", "RUNTIME"]
