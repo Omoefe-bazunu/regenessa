@@ -84,11 +84,12 @@ export default function CartPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
-          {/* Items Table */}
           <div className="lg:col-span-2 space-y-6">
             {cart.map((item) => (
               <div
-                key={item.productId}
+                // FIX: Use item.id as the unique key.
+                // Using index as a fallback ensures the console error disappears.
+                key={item.id || item.productId}
                 className="bg-brand-warm p-6 rounded-[2.5rem] border border-border flex flex-col sm:flex-row items-center gap-6 group"
               >
                 <div className="relative h-32 w-32 rounded-3xl overflow-hidden flex-shrink-0">
@@ -103,14 +104,18 @@ export default function CartPage() {
                 <div className="flex-1 text-center sm:text-left">
                   <h3 className="font-bold text-xl mb-1">{item.name}</h3>
                   <p className="text-brand-primary font-bold mb-4">
-                    ₦{item.price.toLocaleString()} / {item.unit}
+                    ₦{item.price.toLocaleString()}
                   </p>
 
                   <div className="flex items-center justify-center sm:justify-start gap-4">
                     <div className="flex items-center bg-brand-warm dark:bg-white/5 rounded-xl p-1 border border-border">
                       <button
                         onClick={() =>
-                          updateQuantity(item.productId, item.quantity - 1)
+                          // FIX: Use item.id
+                          updateQuantity(
+                            item.id || item.productId,
+                            item.quantity - 1,
+                          )
                         }
                         className="p-2 hover:bg-white dark:hover:bg-white/10 rounded-lg transition-all"
                       >
@@ -121,7 +126,11 @@ export default function CartPage() {
                       </span>
                       <button
                         onClick={() =>
-                          updateQuantity(item.productId, item.quantity + 1)
+                          // FIX: Use item.id
+                          updateQuantity(
+                            item.id || item.productId,
+                            item.quantity + 1,
+                          )
                         }
                         className="p-2 hover:bg-white dark:hover:bg-white/10 rounded-lg transition-all"
                       >
@@ -129,7 +138,8 @@ export default function CartPage() {
                       </button>
                     </div>
                     <button
-                      onClick={() => removeFromCart(item.productId)}
+                      // FIX: Use item.id
+                      onClick={() => removeFromCart(item.id || item.productId)}
                       className="text-red-500 p-3 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-all"
                     >
                       <Trash2 size={20} />

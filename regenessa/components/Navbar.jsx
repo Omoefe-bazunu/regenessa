@@ -15,6 +15,8 @@ import {
   ChevronRight,
   Menu,
   LogOut,
+  Quote,
+  Package2Icon,
 } from "lucide-react";
 
 export default function Navbar() {
@@ -59,8 +61,10 @@ export default function Navbar() {
 
   const navItems = [
     { name: "Home", href: "/", icon: Leaf },
-    { name: "Supplements", href: "/products", icon: LayoutGrid },
-    { name: "Track Orders", href: "/orders", icon: History },
+    { name: "Products", href: "/products", icon: LayoutGrid },
+    { name: "Packages", href: "/packages", icon: Package2Icon },
+    { name: "Testimonials", href: "/testimonials", icon: Quote },
+    { name: "Orders", href: "/orders", icon: History },
     { name: "Contact", href: "/contact", icon: PhoneCall },
   ];
 
@@ -98,7 +102,7 @@ export default function Navbar() {
                 </span>
               </Link>
 
-              <nav className="hidden lg:flex items-center gap-12">
+              <nav className="hidden lg:flex items-center gap-8">
                 {navItems.map((item) => {
                   const isActive = pathname === item.href;
                   return (

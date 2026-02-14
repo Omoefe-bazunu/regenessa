@@ -39,7 +39,7 @@ const Hero = () => {
             href="/products"
             className="group relative flex items-center gap-3 bg-brand-accent text-brand-primary px-10 py-5 rounded-sm font-jakarta font-black text-xs uppercase tracking-widest hover:bg-white transition-all duration-500 shadow-2xl shadow-brand-accent/20"
           >
-            Shop Supplements
+            Products
             <ArrowRight
               size={16}
               className="group-hover:translate-x-1 transition-transform"

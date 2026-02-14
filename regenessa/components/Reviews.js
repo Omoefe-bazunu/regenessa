@@ -110,13 +110,6 @@ export default function Reviews() {
             ))}
           </div>
         )}
-
-        {/* BOTTOM CTA */}
-        <div className="mt-20 text-center animate-page-reveal [animation-delay:600ms]">
-          <p className="font-jakarta text-xs text-brand-dark/40 dark:text-white/40 mb-2">
-            Regenessa: Improving quality of life through plant stem cell therapy
-          </p>
-        </div>
       </div>
     </section>
   );

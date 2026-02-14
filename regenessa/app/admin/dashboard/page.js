@@ -6,6 +6,7 @@ import ManageProducts from "@/components/admin/ManageProducts";
 import InquiryList from "@/components/admin/InquiryList";
 import ManageOrders from "@/components/admin/ManageOrders";
 import ManageConsultations from "@/components/admin/ManageConsultations";
+import UploadTestimonial from "@/components/admin/ManageTestimonial";
 import {
   LayoutDashboard,
   Package,
@@ -19,18 +20,24 @@ import {
   Loader2,
   QuoteIcon,
   ChartAreaIcon,
+  Quote,
+  Package2Icon,
+  CircleQuestionMark,
 } from "lucide-react";
 import AdminReviews from "@/components/admin/ManageReviews";
 import ProductAnalytics from "@/components/admin/products-analytics";
+import ManagePackages from "@/components/admin/ManagePackages";
+import ManageCerts from "@/components/admin/ManageCerts";
+import ManageFAQs from "@/components/admin/ManageFAQs";
 
 export default function AdminDashboard() {
-  const { user, logout, loading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const router = useRouter();
 
   const [activeMenu, setActiveMenu] = useState("overview");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const ADMIN_EMAIL = "omoefe@regenessa.com"; // [cite: 14]
+  const ADMIN_EMAIL = "omoefe@regenessa.com";
   const isAuthorized = user && user.email === ADMIN_EMAIL;
 
   useEffect(() => {
@@ -48,6 +55,10 @@ export default function AdminDashboard() {
     { id: "consultations", label: "Consultations", icon: Stethoscope },
     { id: "messages", label: "Inquiries", icon: MessageSquare },
     { id: "reviews", label: "Reviews", icon: QuoteIcon },
+    { id: "testimonials", label: "Testimonials", icon: Quote },
+    { id: "packages", label: "Packages", icon: Package2Icon },
+    { id: "certifications", label: "Certifications", icon: ShieldAlert },
+    { id: "faqs", label: "faqs", icon: CircleQuestionMark },
     { id: "analytics", label: "Analytics", icon: ChartAreaIcon },
   ];
 
@@ -103,7 +114,8 @@ export default function AdminDashboard() {
             isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
-          <div className="mb-10 px-4 mt-8 lg:mt-0">
+          {/* LOGO SECTION (Fixed) */}
+          <div className="mb-10 px-4 mt-8 lg:mt-0 flex-shrink-0">
             <h1 className="font-syne text-2xl font-black text-brand-primary hidden lg:block uppercase tracking-tighter">
               REGENESSA
             </h1>
@@ -112,7 +124,8 @@ export default function AdminDashboard() {
             </p>
           </div>
 
-          <nav className="flex-1 space-y-2">
+          {/* SCROLLABLE NAV SECTION */}
+          <nav className="flex-1 space-y-2 overflow-y-auto no-scrollbar pr-2">
             {menuItems.map((item) => {
               const Icon = item.icon;
               return (
@@ -136,13 +149,6 @@ export default function AdminDashboard() {
               );
             })}
           </nav>
-
-          <button
-            onClick={logout}
-            className="flex items-center gap-3 px-4 py-4 text-red-500 font-bold text-xs mt-auto border-t border-border hover:bg-red-50 rounded-sm transition-all"
-          >
-            <LogOut size={18} /> Sign Out
-          </button>
         </aside>
 
         {/* MAIN CONTENT */}
@@ -162,10 +168,25 @@ export default function AdminDashboard() {
             {activeMenu === "overview" && <ManageOrders />}
             {activeMenu === "consultations" && <ManageConsultations />}
             {activeMenu === "reviews" && <AdminReviews />}
+            {activeMenu === "testimonials" && <UploadTestimonial />}
+            {activeMenu === "packages" && <ManagePackages />}
+            {activeMenu === "certifications" && <ManageCerts />}
+            {activeMenu === "faqs" && <ManageFAQs />}
             {activeMenu === "analytics" && <ProductAnalytics />}
           </div>
         </main>
       </div>
+
+      {/* INTERNAL CSS FOR NO-SCROLLBAR */}
+      <style jsx>{`
+        .no-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .no-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
     </div>
   );
 }

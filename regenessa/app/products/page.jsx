@@ -70,7 +70,7 @@ export default function ProductsPage() {
               Home
             </Link>
             <span className="">|</span>
-            <span className="text-brand-dark">Supplements</span>
+            <span className="text-brand-dark">Products</span>
           </nav>
 
           <h1 className="font-syne text-5xl md:text-7xl font-bold text-brand-dark tracking-tighter mb-12">

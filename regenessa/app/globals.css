@@ -192,3 +192,26 @@ h4,
   transform: translateY(-12px);
   box-shadow: 0 25px 50px -12px rgba(27, 67, 50, 0.15);
 }
+
+/* --- Infinite Marquee Animation for CERTIFICATION SECTION --- */
+/* --- Optimized Fast Marquee --- */
+/* --- Single Focus Marquee --- */
+/* --- Balanced Premium Marquee --- */
+@keyframes marquee-balanced {
+  0% {
+    transform: translate3d(
+      50%,
+      0,
+      0
+    ); /* Start partially on-screen for immediate visibility */
+  }
+  100% {
+    transform: translate3d(-100%, 0, 0); /* Glide all the way out left */
+  }
+}
+
+.animate-marquee-balanced {
+  display: flex;
+  width: max-content;
+  animation: marquee-balanced 30s linear infinite; /* Smooth glide speed */
+}

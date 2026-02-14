@@ -22,11 +22,11 @@ const plusJakarta = Plus_Jakarta_Sans({
 
 export const metadata = {
   title: {
-    default: "Regenessa | Advanced Regenerative Wellness & Bio-Science",
+    default: "Regenessa | Regenerative Wellness",
     template: "%s | Regenessa",
   },
   description:
-    "Pioneering plant-based stem cell research to transform cellular health and human longevity. Premium supplements for a vibrant, long life.",
+    "Pioneering plant-based stem cell research to transform cellular health and human longevity. Premium products for a vibrant, long life.",
   keywords: [
     "Regenessa",
     "Stem Cell Supplements Nigeria",

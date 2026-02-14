@@ -9,6 +9,7 @@ import {
   Linkedin,
   Twitter,
   ArrowUp,
+  MessageCircle,
 } from "lucide-react";
 
 const Footer = () => {
@@ -18,8 +19,11 @@ const Footer = () => {
     {
       title: "Solutions",
       links: [
-        { name: "All Supplements", href: "/products" },
-        { name: "Track Orders", href: "/orders" },
+        { name: "Products", href: "/products" },
+        { name: "Packages", href: "/packages" },
+        { name: "Testimonials", href: "/teestimonials" },
+
+        { name: "Orders", href: "/orders" },
       ],
     },
     {
@@ -89,7 +93,7 @@ const Footer = () => {
         </div>
 
         {/* CONTACT MATRICES */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 py-10 border-y border-white/5 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 py-10 border-y border-white/5 mb-12">
           <div className="flex items-center gap-4 group">
             <div className="p-2.5 rounded-lg bg-white/5 text-[#4ade80]">
               <MapPin size={18} />
@@ -122,10 +126,23 @@ const Footer = () => {
             </div>
             <div className="flex flex-col">
               <span className="text-[10px] uppercase tracking-widest text-white/30 font-bold">
-                Consultation
+                Call
               </span>
               <span className="text-xs font-bold text-white">
-                +234 (0) 8142081020
+                +234 (0) 8142081020; <br /> +234 (0) 8029306720
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center gap-4 group">
+            <div className="p-2.5 rounded-lg bg-white/5 text-[#4ade80]">
+              <MessageCircle size={18} />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-[10px] uppercase tracking-widest text-white/30 font-bold">
+                WhatsApp
+              </span>
+              <span className="text-xs font-bold text-white">
+                +234 (0) 8029306720
               </span>
             </div>
           </div>
@@ -135,7 +152,7 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex flex-col md:items-start items-center">
             <p className="text-[10px] font-bold text-white/20 uppercase tracking-[0.3em]">
-              © {currentYear} Regenessa Laboratories International.
+              © {currentYear} Regenessa Ltd.
             </p>
             <p className="text-[9px] text-white/10 mt-1 uppercase tracking-widest">
               Natural Science • Bio-Vitality • Longevity
