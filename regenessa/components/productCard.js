@@ -23,6 +23,8 @@ const ProductCard = ({ product }) => {
       id: product.id,
       name: product.name,
       price: product.price,
+      setPrice: product.setPrice || null,
+      setQuantity: product.setQuantity || null,
       imageUrl: product.imageUrl,
       unit: product.unit || "bottle",
     });
@@ -54,8 +56,14 @@ const ProductCard = ({ product }) => {
         {/* PRICE OVERLAY BOX */}
         <div className="absolute bottom-0 left-0 z-20 bg-brand-primary px-5 py-3 shadow-xl">
           <span className="text-sm font-syne font-bold text-white tracking-wider">
-            ₦{product.price?.toLocaleString()}
+            ₦{Number(product.price).toLocaleString()}
           </span>
+          {product.setPrice && product.setQuantity && (
+            <span className="block text-[9px] text-white/70 font-jakarta tracking-wider">
+              ₦{Number(product.setPrice).toLocaleString()} for{" "}
+              {product.setQuantity}+
+            </span>
+          )}
         </div>
 
         {/* QUICK ACTION OVERLAY */}

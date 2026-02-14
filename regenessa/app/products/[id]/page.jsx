@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import api from "@/lib/api";
 import {
@@ -14,6 +14,7 @@ import {
   Dna,
   CheckCircle2,
   Play,
+  Tag,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useCart } from "@/context/CartContext";
@@ -37,7 +38,6 @@ export default function ProductDetails({ params }) {
   const { addToCart } = useCart();
   const { user } = useAuth();
 
-  //DATA FETCHING EFFECT
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -45,7 +45,6 @@ export default function ProductDetails({ params }) {
         setProduct(data);
         setSelectedImage(data.imageUrl);
       } catch (err) {
-        // This only fires if the actual API call fails
         toast.error("Product data could not be retrieved");
       } finally {
         setLoading(false);
@@ -60,8 +59,30 @@ export default function ProductDetails({ params }) {
       return;
     }
     if (product.stockCount <= 0) return toast.error("Out of stock");
-    addToCart(product, quantity);
+    addToCart(
+      {
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        setPrice: product.setPrice || null,
+        setQuantity: product.setQuantity || null,
+        imageUrl: product.imageUrl,
+        unit: product.unit || "bottle",
+      },
+      quantity,
+    );
   };
+
+  // ─── Derive the effective price for the selected quantity ───
+  const effectivePrice =
+    product?.setPrice && product?.setQuantity && quantity >= product.setQuantity
+      ? product.setPrice
+      : product?.price;
+
+  const isSetDeal =
+    product?.setPrice &&
+    product?.setQuantity &&
+    quantity >= product.setQuantity;
 
   if (loading) {
     return (
@@ -76,14 +97,13 @@ export default function ProductDetails({ params }) {
 
   if (!product) return null;
 
-  // Combine all images for gallery
   const allImages = [product.imageUrl, ...(product.gallery || [])].filter(
     Boolean,
   );
 
   return (
     <main className="min-h-screen bg-brand-warm pt-12 pb-20 transition-all">
-      {/* --- LOGIN MODAL --- */}
+      {/* LOGIN MODAL */}
       {showLoginModal && (
         <div className="fixed inset-0 z-100 flex items-center justify-center px-6 backdrop-blur-md bg-brand-dark/40">
           <div className="bg-white p-10 rounded-sm border border-brand-dark/10 shadow-2xl text-center max-w-sm w-full animate-page-reveal">
@@ -92,7 +112,7 @@ export default function ProductDetails({ params }) {
               Login Required
             </h3>
             <p className="font-jakarta text-xs text-brand-dark/50 mb-8 leading-relaxed">
-              Please sign in to your Regenessa account to purchase suplements
+              Please sign in to your Regenessa account to purchase supplements
             </p>
             <div className="flex flex-col gap-3">
               <Link
@@ -112,7 +132,7 @@ export default function ProductDetails({ params }) {
         </div>
       )}
 
-      {/* --- VIDEO MODAL --- */}
+      {/* VIDEO MODAL */}
       {showVideo && product.videoUrl && (
         <div
           className="fixed inset-0 z-100 flex items-center justify-center px-6 backdrop-blur-md bg-brand-dark/80"
@@ -154,7 +174,6 @@ export default function ProductDetails({ params }) {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-start">
           {/* LEFT: IMAGE AREA */}
           <div className="animate-page-reveal space-y-4">
-            {/* Main Image Display */}
             <div className="relative aspect-square bg-white border border-brand-dark/5 shadow-2xl overflow-hidden group">
               <Image
                 src={
@@ -170,7 +189,6 @@ export default function ProductDetails({ params }) {
               </div>
             </div>
 
-            {/* Thumbnail Gallery */}
             <div className="grid grid-cols-4 gap-3">
               {allImages.map((img, idx) => (
                 <button
@@ -191,7 +209,6 @@ export default function ProductDetails({ params }) {
                 </button>
               ))}
 
-              {/* Video Thumbnail */}
               {product.videoUrl && (
                 <button
                   onClick={() => setShowVideo(true)}
@@ -231,19 +248,47 @@ export default function ProductDetails({ params }) {
               {product.shortDescription}
             </p>
 
+            {/* ─── PRICE BOX ─── */}
             <div className="bg-warm border border-brand-dark/5 p-8 mb-10 shadow-sm relative overflow-hidden">
               <div className="relative z-10">
                 <p className="text-[10px] font-black uppercase tracking-widest text-brand-dark/40 mb-2">
                   Price per unit
                 </p>
+
+                {/* Effective price — updates live as quantity changes */}
                 <div className="flex items-baseline gap-3">
                   <span className="font-syne text-5xl font-bold text-brand-dark">
-                    ₦{product.price?.toLocaleString()}
+                    ₦{Number(effectivePrice).toLocaleString()}
                   </span>
                   <span className="text-xs font-bold text-brand-dark/30 uppercase tracking-widest">
                     NGN
                   </span>
+                  {isSetDeal && (
+                    <span className="text-sm font-bold text-brand-dark/30 line-through">
+                      ₦{Number(product.setPrice)?.toLocaleString()}
+                    </span>
+                  )}
                 </div>
+
+                {/* Set deal callout — always visible if the product has one */}
+                {product.setPrice && product.setQuantity && (
+                  <div
+                    className={`flex items-center gap-2 mt-3 transition-all ${
+                      isSetDeal ? "text-brand-primary" : "text-brand-dark/40"
+                    }`}
+                  >
+                    <Tag size={12} />
+                    <p className="text-[10px] font-black uppercase tracking-widest">
+                      {isSetDeal
+                        ? `Set deal applied — ₦${Number(
+                            product.setPrice,
+                          ).toLocaleString()} per unit`
+                        : `Buy ${product.setQuantity}+ units for ₦${Number(
+                            product.setPrice,
+                          ).toLocaleString()} each`}
+                    </p>
+                  </div>
+                )}
               </div>
               <div className="absolute -right-4 -bottom-4 opacity-5 text-brand-dark">
                 <Dna size={120} />
@@ -351,12 +396,12 @@ export default function ProductDetails({ params }) {
           </div>
         </div>
 
-        {/* --- REVIEWS SECTION --- */}
+        {/* REVIEWS SECTION */}
         <div className="mt-12 pt-12 border-t border-brand-dark/10">
           <ReviewSection productId={productId} />
         </div>
 
-        {/* --- RELATED PRODUCTS --- */}
+        {/* RELATED PRODUCTS */}
         <RelatedProducts
           currentCategory={product.category}
           currentProductId={product.id}

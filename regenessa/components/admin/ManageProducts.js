@@ -39,6 +39,8 @@ export default function ManageProducts() {
     targetAilments: "",
     stockCount: "",
     status: "In Stock",
+    setPrice: "",
+    setQuantity: "",
     featured: false,
   });
 
@@ -69,6 +71,8 @@ export default function ManageProducts() {
       targetAilments: "",
       stockCount: "",
       status: "In Stock",
+      setPrice: "",
+      setQuantity: "",
       featured: false,
     });
     setMainImage(null);
@@ -350,6 +354,24 @@ export default function ManageProducts() {
               <option value="Out of Stock">Out of Stock</option>
               <option value="Pre-Order">Pre-Order</option>
             </select>
+            <input
+              type="number"
+              value={formData.setQuantity}
+              onChange={(e) =>
+                setFormData({ ...formData, setQuantity: e.target.value })
+              }
+              className={inputClass}
+              placeholder="Set Quantity (e.g. 5)"
+            />
+            <input
+              type="number"
+              value={formData.setPrice}
+              onChange={(e) =>
+                setFormData({ ...formData, setPrice: e.target.value })
+              }
+              className={inputClass}
+              placeholder="Set Price (₦) — price when buying 5+"
+            />
             <label className="flex items-center gap-3 px-5 py-4 bg-brand-warm dark:bg-white/5 border border-border dark:border-white/10 rounded-2xl cursor-pointer">
               <input
                 type="checkbox"

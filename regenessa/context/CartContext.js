@@ -6,6 +6,16 @@ import { toast } from "react-hot-toast";
 
 const CartContext = createContext();
 
+// ─── Helper: resolve the effective unit price based on quantity ───
+const getEffectivePrice = (item) => {
+  const setPrice = Number(item.setPrice);
+  const setQty = Number(item.setQuantity);
+  if (setPrice && setQty && item.quantity >= setQty) {
+    return setPrice;
+  }
+  return Number(item.price);
+};
+
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
   const [cartLoading, setCartLoading] = useState(false);
@@ -34,7 +44,6 @@ export const CartProvider = ({ children }) => {
     fetchCart();
   }, [user, authLoading]);
 
-  // 1. UPDATED: Single Add with Functional State to prevent race conditions
   const addToCart = async (product, quantity = 1) => {
     if (!user) {
       toast.error("Please login to start shopping");
@@ -45,12 +54,14 @@ export const CartProvider = ({ children }) => {
         productId: product.id,
         name: product.name,
         price: product.price,
+        // Pass set pricing fields so the cart item carries them
+        setPrice: product.setPrice || null,
+        setQuantity: product.setQuantity || null,
         quantity,
         unit: product.unit || "Unit",
         imageUrl: product.imageUrl,
       });
 
-      // Use the data returned from the server to keep sync
       setCart(data.items);
       toast.success(`${product.name} added to cart`);
       setIsCartOpen(true);
@@ -59,7 +70,6 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  // 2. NEW: Scalable Bulk Add (Syncs Bundle with Backend)
   const addMultipleToCart = async (products) => {
     if (!user) {
       toast.error("Please login to add bundles");
@@ -68,18 +78,17 @@ export const CartProvider = ({ children }) => {
 
     setCartLoading(true);
     try {
-      // Map products to the format your backend expects
       const itemsToAdd = products.map((product) => ({
         productId: product.id,
         name: product.name,
         price: product.price,
+        setPrice: product.setPrice || null,
+        setQuantity: product.setQuantity || null,
         quantity: 1,
         unit: product.unit || "Unit",
         imageUrl: product.imageUrl,
       }));
 
-      // NOTE: Ensure your backend has a /cart/bulk-add route.
-      // If not, we fall back to local state + eventual sync.
       const { data } = await api.post("/cart/bulk-add", { items: itemsToAdd });
 
       setCart(data.items);
@@ -87,8 +96,6 @@ export const CartProvider = ({ children }) => {
       setIsCartOpen(true);
     } catch (error) {
       console.error("Bulk add error:", error);
-      // Fallback: If backend bulk route doesn't exist yet, update locally
-      // but warn that a refresh might lose data until synced.
       toast.error("Issue syncing bundle to server");
     } finally {
       setCartLoading(false);
@@ -127,10 +134,11 @@ export const CartProvider = ({ children }) => {
   };
 
   const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
-  const cartTotal = cart.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0,
-  );
+
+  // ─── cartTotal now uses effective pricing ───
+  const cartTotal = cart.reduce((total, item) => {
+    return total + getEffectivePrice(item) * item.quantity;
+  }, 0);
 
   return (
     <CartContext.Provider
@@ -146,6 +154,7 @@ export const CartProvider = ({ children }) => {
         removeFromCart,
         isCartOpen,
         setIsCartOpen,
+        getEffectivePrice,
       }}
     >
       {children}

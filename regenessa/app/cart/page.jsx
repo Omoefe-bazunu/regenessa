@@ -12,24 +12,27 @@ import {
   ArrowLeft,
   ShoppingBag,
   CreditCard,
-  Lock,
   Loader2,
 } from "lucide-react";
 
 export default function CartPage() {
-  const { cart, removeFromCart, updateQuantity, cartTotal, cartLoading } =
-    useCart();
+  const {
+    cart,
+    removeFromCart,
+    updateQuantity,
+    cartTotal,
+    cartLoading,
+    getEffectivePrice,
+  } = useCart();
   const { user, loading: authLoading } = useAuth();
   const router = useRouter();
 
-  // Redirect to login if not authenticated
   useEffect(() => {
     if (!authLoading && !user) {
       router.push("/login");
     }
   }, [user, authLoading, router]);
 
-  // Show loading state while checking auth
   if (authLoading) {
     return (
       <main className="min-h-screen bg-brand-warm dark:bg-brand-dark flex flex-col items-center justify-center gap-4">
@@ -41,10 +44,7 @@ export default function CartPage() {
     );
   }
 
-  // Don't render anything if not logged in (will redirect)
-  if (!user) {
-    return null;
-  }
+  if (!user) return null;
 
   if (cart.length === 0 && !cartLoading) {
     return (
@@ -85,78 +85,103 @@ export default function CartPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
           <div className="lg:col-span-2 space-y-6">
-            {cart.map((item) => (
-              <div
-                // FIX: Use item.id as the unique key.
-                // Using index as a fallback ensures the console error disappears.
-                key={item.id || item.productId}
-                className="bg-brand-warm p-6 rounded-[2.5rem] border border-border flex flex-col sm:flex-row items-center gap-6 group"
-              >
-                <div className="relative h-32 w-32 rounded-3xl overflow-hidden flex-shrink-0">
-                  <Image
-                    src={item.imageUrl || "/placeholder-food.jpg"}
-                    alt={item.name}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
+            {cart.map((item) => {
+              const effectivePrice = getEffectivePrice(item);
+              const isSetDeal =
+                Number(item.setPrice) &&
+                Number(item.setQuantity) &&
+                item.quantity >= Number(item.setQuantity);
 
-                <div className="flex-1 text-center sm:text-left">
-                  <h3 className="font-bold text-xl mb-1">{item.name}</h3>
-                  <p className="text-brand-primary font-bold mb-4">
-                    ₦{item.price.toLocaleString()}
-                  </p>
+              return (
+                <div
+                  key={item.id || item.productId}
+                  className="bg-brand-warm p-6 rounded-[2.5rem] border border-border flex flex-col sm:flex-row items-center gap-6 group"
+                >
+                  <div className="relative h-32 w-32 rounded-3xl overflow-hidden flex-shrink-0">
+                    <Image
+                      src={item.imageUrl || "/placeholder-food.jpg"}
+                      alt={item.name}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
 
-                  <div className="flex items-center justify-center sm:justify-start gap-4">
-                    <div className="flex items-center bg-brand-warm dark:bg-white/5 rounded-xl p-1 border border-border">
+                  <div className="flex-1 text-center sm:text-left">
+                    <h3 className="font-bold text-xl mb-1">{item.name}</h3>
+
+                    {/* ─── Price display with set deal indicator ─── */}
+                    <div className="flex items-center justify-center sm:justify-start gap-2 mb-4">
+                      <p className="text-brand-primary font-bold">
+                        ₦{effectivePrice.toLocaleString()}
+                      </p>
+                      {isSetDeal ? (
+                        <>
+                          <span className="text-brand-dark/30 line-through text-sm">
+                            ₦{item.price.toLocaleString()}
+                          </span>
+                          <span className="bg-brand-primary/10 text-brand-primary text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-full">
+                            Set Deal
+                          </span>
+                        </>
+                      ) : item.setPrice && item.setQuantity ? (
+                        <span className="text-brand-dark/40 text-[10px] font-bold">
+                          Buy {item.setQuantity} for ₦
+                          {item.setPrice.toLocaleString()} each
+                        </span>
+                      ) : null}
+                    </div>
+
+                    <div className="flex items-center justify-center sm:justify-start gap-4">
+                      <div className="flex items-center bg-brand-warm dark:bg-white/5 rounded-xl p-1 border border-border">
+                        <button
+                          onClick={() =>
+                            updateQuantity(
+                              item.id || item.productId,
+                              item.quantity - 1,
+                            )
+                          }
+                          className="p-2 hover:bg-white dark:hover:bg-white/10 rounded-lg transition-all"
+                        >
+                          <Minus size={16} />
+                        </button>
+                        <span className="w-10 text-center font-bold">
+                          {item.quantity}
+                        </span>
+                        <button
+                          onClick={() =>
+                            updateQuantity(
+                              item.id || item.productId,
+                              item.quantity + 1,
+                            )
+                          }
+                          className="p-2 hover:bg-white dark:hover:bg-white/10 rounded-lg transition-all"
+                        >
+                          <Plus size={16} />
+                        </button>
+                      </div>
                       <button
                         onClick={() =>
-                          // FIX: Use item.id
-                          updateQuantity(
-                            item.id || item.productId,
-                            item.quantity - 1,
-                          )
+                          removeFromCart(item.id || item.productId)
                         }
-                        className="p-2 hover:bg-white dark:hover:bg-white/10 rounded-lg transition-all"
+                        className="text-red-500 p-3 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-all"
                       >
-                        <Minus size={16} />
-                      </button>
-                      <span className="w-10 text-center font-bold">
-                        {item.quantity}
-                      </span>
-                      <button
-                        onClick={() =>
-                          // FIX: Use item.id
-                          updateQuantity(
-                            item.id || item.productId,
-                            item.quantity + 1,
-                          )
-                        }
-                        className="p-2 hover:bg-white dark:hover:bg-white/10 rounded-lg transition-all"
-                      >
-                        <Plus size={16} />
+                        <Trash2 size={20} />
                       </button>
                     </div>
-                    <button
-                      // FIX: Use item.id
-                      onClick={() => removeFromCart(item.id || item.productId)}
-                      className="text-red-500 p-3 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-all"
-                    >
-                      <Trash2 size={20} />
-                    </button>
+                  </div>
+
+                  {/* ─── Subtotal uses effective price ─── */}
+                  <div className="text-right hidden sm:block">
+                    <p className="text-xs font-bold uppercase tracking-widest opacity-30 mb-1">
+                      Subtotal
+                    </p>
+                    <p className="font-heading text-2xl">
+                      ₦{(effectivePrice * item.quantity).toLocaleString()}
+                    </p>
                   </div>
                 </div>
-
-                <div className="text-right hidden sm:block">
-                  <p className="text-xs font-bold uppercase tracking-widest opacity-30 mb-1">
-                    Subtotal
-                  </p>
-                  <p className="font-heading text-2xl">
-                    ₦{(item.price * item.quantity).toLocaleString()}
-                  </p>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Summary Sidebar */}

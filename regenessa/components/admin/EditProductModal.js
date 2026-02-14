@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import Image from "next/image";
-import { X, Save, Loader2, UploadCloud, Film } from "lucide-react";
+import { X, Save, Loader2, UploadCloud, Film, Tag } from "lucide-react";
 
 export default function EditProductModal({
   isOpen,
@@ -40,6 +40,7 @@ export default function EditProductModal({
         </div>
 
         <form onSubmit={onUpdate} className="space-y-5">
+          {/* MAIN IMAGE */}
           <div className="relative h-44 border-2 border-dashed border-border rounded-2xl bg-gray-50 overflow-hidden group">
             <Image
               src={
@@ -62,6 +63,7 @@ export default function EditProductModal({
             />
           </div>
 
+          {/* GALLERY + VIDEO */}
           <div className="grid grid-cols-3 gap-4">
             <div className="relative h-24 border border-dashed border-border rounded-xl bg-gray-50 flex items-center justify-center overflow-hidden">
               <Image
@@ -131,6 +133,8 @@ export default function EditProductModal({
               className={inputClass}
               placeholder="Category"
             />
+
+            {/* PRICE + STOCK */}
             <div className="grid grid-cols-2 gap-4">
               <input
                 type="number"
@@ -151,6 +155,7 @@ export default function EditProductModal({
                 placeholder="Stock Count"
               />
             </div>
+
             <select
               value={formData?.status || "In Stock"}
               onChange={(e) =>
@@ -162,6 +167,40 @@ export default function EditProductModal({
               <option value="Out of Stock">Out of Stock</option>
               <option value="Pre-Order">Pre-Order</option>
             </select>
+
+            {/* ─── SET DEAL FIELDS ─── */}
+            <div className="grid grid-cols-2 gap-4">
+              <input
+                type="number"
+                value={formData?.setQuantity || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, setQuantity: e.target.value })
+                }
+                className={inputClass}
+                placeholder="Set Quantity (e.g. 5)"
+              />
+              <input
+                type="number"
+                value={formData?.setPrice || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, setPrice: e.target.value })
+                }
+                className={inputClass}
+                placeholder="Set Price (₦)"
+              />
+            </div>
+
+            {/* Live set deal preview */}
+            {formData?.setQuantity && formData?.setPrice && (
+              <div className="flex items-center gap-2 px-4 py-3 bg-brand-primary/5 border border-brand-primary/20 rounded-xl">
+                <Tag size={13} className="text-brand-primary shrink-0" />
+                <p className="text-[11px] font-bold text-brand-primary">
+                  Buying {formData.setQuantity}+ units → ₦
+                  {Number(formData.setPrice).toLocaleString()} each
+                </p>
+              </div>
+            )}
+
             <label className="flex items-center gap-3 px-5 py-4 bg-brand-warm dark:bg-white/5 border border-border dark:border-white/10 rounded-2xl cursor-pointer">
               <input
                 type="checkbox"
@@ -175,6 +214,7 @@ export default function EditProductModal({
                 Featured Product
               </span>
             </label>
+
             <textarea
               rows="2"
               value={formData?.shortDescription || ""}
@@ -195,7 +235,11 @@ export default function EditProductModal({
             />
             <textarea
               rows="3"
-              value={formData?.benefits || ""}
+              value={
+                Array.isArray(formData?.benefits)
+                  ? formData.benefits.join(", ")
+                  : formData?.benefits || ""
+              }
               onChange={(e) =>
                 setFormData({ ...formData, benefits: e.target.value })
               }
@@ -204,7 +248,11 @@ export default function EditProductModal({
             />
             <textarea
               rows="3"
-              value={formData?.targetAilments || ""}
+              value={
+                Array.isArray(formData?.targetAilments)
+                  ? formData.targetAilments.join(", ")
+                  : formData?.targetAilments || ""
+              }
               onChange={(e) =>
                 setFormData({ ...formData, targetAilments: e.target.value })
               }

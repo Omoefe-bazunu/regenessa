@@ -11,9 +11,6 @@ import {
   CreditCard,
   MapPin,
   User,
-  Phone,
-  Mail,
-  Home,
   CheckCircle2,
 } from "lucide-react";
 import Image from "next/image";
@@ -21,7 +18,7 @@ import Image from "next/image";
 export default function CheckoutPage() {
   const router = useRouter();
   const { user } = useAuth();
-  const { cart, clearCart } = useCart();
+  const { cart, clearCart, getEffectivePrice } = useCart();
   const [loading, setLoading] = useState(false);
   const [shippingDetails, setShippingDetails] = useState({
     fullName: "",
@@ -44,8 +41,9 @@ export default function CheckoutPage() {
     }
   }, [user, cart, router]);
 
+  // ─── Uses effective pricing (set deal aware) ───
   const totalAmount = cart.reduce(
-    (sum, item) => sum + item.price * item.quantity,
+    (sum, item) => sum + getEffectivePrice(item) * item.quantity,
     0,
   );
 
@@ -59,7 +57,6 @@ export default function CheckoutPage() {
   const handleCheckout = async (e) => {
     e.preventDefault();
 
-    // Validation
     if (
       !shippingDetails.fullName ||
       !shippingDetails.email ||
@@ -74,7 +71,6 @@ export default function CheckoutPage() {
     setLoading(true);
 
     try {
-      // Step 1: Initialize Flutterwave Payment
       const { data } = await api.post("/payment/initialize", {
         amount: totalAmount,
         email: shippingDetails.email,
@@ -82,7 +78,6 @@ export default function CheckoutPage() {
         phone: shippingDetails.phone,
       });
 
-      // Step 2: Store shipping details in localStorage for after payment
       localStorage.setItem(
         "pendingOrder",
         JSON.stringify({
@@ -93,7 +88,6 @@ export default function CheckoutPage() {
         }),
       );
 
-      // Step 3: Redirect to Flutterwave payment page
       window.location.href = data.link;
     } catch (err) {
       toast.error(err.response?.data?.error || "Payment initialization failed");
@@ -265,32 +259,57 @@ export default function CheckoutPage() {
               <h2 className="font-syne text-2xl font-bold mb-6">
                 Order Summary
               </h2>
-              {/* Order Summary - Line ~264 in your checkout page */}
+
               <div className="space-y-4 mb-6">
-                {cart.map((item) => (
-                  <div
-                    key={item.id || item.productId} // ADD THIS LINE
-                    className="flex items-center gap-4 pb-4 border-b border-brand-dark/5"
-                  >
-                    <div className="relative w-16 h-16 bg-brand-warm rounded-lg overflow-hidden">
-                      <Image
-                        src={item.imageUrl || "/placeholder.png"}
-                        alt={item.name}
-                        fill
-                        className="object-cover"
-                      />
+                {cart.map((item) => {
+                  const effectivePrice = getEffectivePrice(item);
+                  const isSetDeal =
+                    Number(item.setPrice) &&
+                    Number(item.setQuantity) &&
+                    item.quantity >= Number(item.setQuantity);
+
+                  return (
+                    <div
+                      key={item.id || item.productId}
+                      className="flex items-center gap-4 pb-4 border-b border-brand-dark/5"
+                    >
+                      <div className="relative w-16 h-16 bg-brand-warm rounded-lg overflow-hidden shrink-0">
+                        <Image
+                          src={item.imageUrl || "/placeholder.png"}
+                          alt={item.name}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-bold text-sm truncate">
+                          {item.name}
+                        </h3>
+                        <p className="text-xs text-brand-dark/50">
+                          Qty: {item.quantity}
+                        </p>
+                        {isSetDeal && (
+                          <span className="text-[9px] font-black uppercase tracking-widest text-brand-primary">
+                            Set Deal Applied
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-right shrink-0">
+                        <span className="font-bold text-sm block">
+                          ₦{(effectivePrice * item.quantity).toLocaleString()}
+                        </span>
+                        {isSetDeal && (
+                          <span className="text-xs text-brand-dark/30 line-through">
+                            ₦
+                            {(
+                              Number(item.price) * item.quantity
+                            ).toLocaleString()}
+                          </span>
+                        )}
+                      </div>
                     </div>
-                    <div className="flex-1">
-                      <h3 className="font-bold text-sm">{item.name}</h3>
-                      <p className="text-xs text-brand-dark/50">
-                        Qty: {item.quantity}
-                      </p>
-                    </div>
-                    <span className="font-bold">
-                      ₦{(item.price * item.quantity).toLocaleString()}
-                    </span>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               <div className="space-y-3 pt-6 border-t border-brand-dark/10">
