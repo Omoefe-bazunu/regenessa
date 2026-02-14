@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
+  baseURL: "https://regenessa-backend.onrender.com/api",
   // baseURL: "http://localhost:5000/api",
 });
 
