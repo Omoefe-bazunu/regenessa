@@ -16,10 +16,9 @@ function VerifyPaymentContent() {
 
   useEffect(() => {
     const verifyPayment = async () => {
-      const transactionId = searchParams.get("transaction_id");
-      const txRef = searchParams.get("tx_ref");
+      const reference = searchParams.get("reference");
 
-      if (!transactionId && !txRef) {
+      if (!reference) {
         setStatus("failed");
         toast.error("Invalid payment reference");
         return;
@@ -41,7 +40,7 @@ function VerifyPaymentContent() {
           items: pendingOrder.items,
           totalAmount: pendingOrder.totalAmount,
           shippingDetails: pendingOrder.shippingDetails,
-          transactionId: transactionId || txRef,
+          reference,
         });
 
         clearCart();

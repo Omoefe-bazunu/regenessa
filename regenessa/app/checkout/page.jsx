@@ -78,17 +78,19 @@ export default function CheckoutPage() {
         phone: shippingDetails.phone,
       });
 
+      // Store pending order
       localStorage.setItem(
         "pendingOrder",
         JSON.stringify({
           items: cart,
           totalAmount,
           shippingDetails,
-          tx_ref: data.tx_ref,
+          reference: data.reference,
         }),
       );
 
-      window.location.href = data.link;
+      // Redirect to Paystack
+      window.location.href = data.authorization_url;
     } catch (err) {
       toast.error(err.response?.data?.error || "Payment initialization failed");
       setLoading(false);
