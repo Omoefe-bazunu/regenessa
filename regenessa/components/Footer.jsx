@@ -94,16 +94,20 @@ const Footer = () => {
 
         {/* CONTACT MATRICES */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 py-10 border-y border-white/5 mb-12">
-          <div className="flex items-center gap-4 group">
-            <div className="p-2.5 rounded-lg bg-white/5 text-[#4ade80]">
+          <div className="flex items-start gap-4 group">
+            <div className="p-2.5 rounded-lg bg-white/5 text-[#4ade80] mt-1">
               <MapPin size={18} />
             </div>
             <div className="flex flex-col">
               <span className="text-[10px] uppercase tracking-widest text-white/30 font-bold">
                 Location
               </span>
-              <span className="text-xs font-bold text-white">
-                Lagos, Nigeria
+              <span className="text-[11px] leading-relaxed font-bold text-white uppercase">
+                2 ALAKE LAKONKO STREET,
+                <br />
+                OFF LIASU ROAD, IDIMU
+                <br />
+                EGBE AREA, LAGOS STATE
               </span>
             </div>
           </div>
@@ -115,9 +119,12 @@ const Footer = () => {
               <span className="text-[10px] uppercase tracking-widest text-white/30 font-bold">
                 Inquiries
               </span>
-              <span className="text-xs font-bold text-white">
+              <a
+                href="mailto:support@regenessa.com"
+                className="text-xs font-bold text-white hover:text-[#4ade80] transition-colors"
+              >
                 support@regenessa.com
-              </span>
+              </a>
             </div>
           </div>
           <div className="flex items-center gap-4 group">
@@ -128,9 +135,20 @@ const Footer = () => {
               <span className="text-[10px] uppercase tracking-widest text-white/30 font-bold">
                 Call
               </span>
-              <span className="text-xs font-bold text-white">
-                +234 (0) 8142081020; <br /> +234 (0) 8029306720
-              </span>
+              <div className="flex flex-col text-xs font-bold text-white">
+                <a
+                  href="tel:+2348142081020"
+                  className="hover:text-[#4ade80] transition-colors"
+                >
+                  +234 (0) 8142081020
+                </a>
+                <a
+                  href="tel:+2348029306720"
+                  className="hover:text-[#4ade80] transition-colors"
+                >
+                  +234 (0) 8029306720
+                </a>
+              </div>
             </div>
           </div>
           <div className="flex items-center gap-4 group">
@@ -141,9 +159,14 @@ const Footer = () => {
               <span className="text-[10px] uppercase tracking-widest text-white/30 font-bold">
                 WhatsApp
               </span>
-              <span className="text-xs font-bold text-white">
+              <a
+                href="https://wa.me/2348029306720"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs font-bold text-white hover:text-[#4ade80] transition-colors"
+              >
                 +234 (0) 8029306720
-              </span>
+              </a>
             </div>
           </div>
         </div>

@@ -41,7 +41,7 @@ const ProductSection = () => {
             </span>
             <h2 className="font-syne text-3xl md:text-4xl font-bold text-brand-dark mb-6 leading-[1.1]">
               SWISS QUALITY <br />
-              FORMULAR FOR <br /> CELLULAR REGUVINATION <br />
+              FORMULA FOR <br /> CELLULAR REJUVENATION <br />
               AND LONGEVITY
             </h2>
           </div>

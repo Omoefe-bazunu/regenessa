@@ -2,24 +2,31 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ShieldCheck, Target, Award, ArrowRight } from "lucide-react";
+import {
+  ShieldCheck,
+  Target,
+  Award,
+  ArrowRight,
+  Handshake,
+  ExternalLink,
+} from "lucide-react";
 
 export default function AboutSection() {
   const coreValues = [
     {
-      icon: <ShieldCheck className="text-brand-accent" size={24} />,
-      title: "Our Mission",
-      desc: "Promoting holistic longevity through innovative anti-aging and plant stem cell solutions. ",
-    },
-    {
       icon: <Target className="text-brand-accent" size={24} />,
-      title: "Our Vision",
-      desc: "To be a trusted leader in regenerative wellness, empowering graceful and natural aging.",
+      title: "Our Mission & Vision",
+      desc: "To be a trusted leader in regenerative wellness, promoting holistic longevity through scientifically backed plant stem cell solutions.",
     },
     {
       icon: <Award className="text-brand-accent" size={24} />,
       title: "Expert Leadership",
-      desc: "Led by Emuovbe Patience, a dedicated Lifestyle Consultant and Plant Stemcell Therapist. ",
+      desc: "Led by Emuovbe Patience, a dedicated Lifestyle Consultant and Plant Stemcell Therapist guiding our clinical direction.",
+    },
+    {
+      icon: <Handshake className="text-brand-accent" size={24} />,
+      title: "Phytoscience Partnership",
+      desc: "Our strategic alliance with Phytoscience, the sole distributor of these revolutionary products, guarantees 100% authenticity.",
     },
   ];
 
@@ -30,7 +37,7 @@ export default function AboutSection() {
           {/* LEFT: CONTENT AREA */}
           <div className="animate-page-reveal">
             <span className="font-jakarta font-black text-[10px] uppercase tracking-[0.4em] mb-4 block text-brand-accent">
-              The Science of Longevity
+              ABOUT REGENESSA
             </span>
             <h2 className="font-syne text-4xl lg:text-6xl font-bold mb-8 text-brand-warm leading-[1.1] tracking-tighter">
               <span className="text-white">Pioneering</span> <br />
@@ -38,11 +45,26 @@ export default function AboutSection() {
               <span className="text-white">Wellness</span>
             </h2>
 
-            <p className="font-jakarta text-white/70 dark:text-brand-dark/70 text-lg leading-relaxed mb-12 max-w-xl">
+            {/* PARTNERSHIP ANNOUNCEMENT BOX */}
+            <div className="mb-10 p-6 bg-white/5 border-l-2 border-brand-accent rounded-r-sm">
+              <p className="font-jakarta text-white/80 text-sm leading-relaxed italic">
+                &quot;Under the expert leadership of{" "}
+                <span className="text-brand-accent font-bold">
+                  Emuovbe Patience
+                </span>
+                , we are proud to announce our official partnership with{" "}
+                <span className="text-white font-bold">Phytoscience</span> — the
+                sole distributor of premium plant stem cell products. This
+                collaboration ensures our clients receive only authentic,
+                scientifically backed solutions sourced directly through
+                authorized channels.&quot;
+              </p>
+            </div>
+
+            <p className="font-jakarta text-white/70 text-lg leading-relaxed mb-12 max-w-xl">
               Regenessa stands at the forefront of cellular health, bridging the
-              gap between clinical science and natural recovery. We specialize
-              in plant stem cell therapy designed to optimize your biological
-              potential.
+              gap between clinical science and natural recovery through our
+              strategic alliance with global leaders in biotechnology.
             </p>
 
             <div className="space-y-8 mb-12">
@@ -52,10 +74,10 @@ export default function AboutSection() {
                     {value.icon}
                   </div>
                   <div>
-                    <div className="font-syne font-bold text-white">
+                    <div className="font-syne font-bold text-white uppercase text-xs tracking-widest mb-1">
                       {value.title}
                     </div>
-                    <p className="font-jakarta text-sm text-white/50 dark:text-brand-dark/50 leading-relaxed">
+                    <p className="font-jakarta text-sm text-white/50 leading-relaxed">
                       {value.desc}
                     </p>
                   </div>
@@ -87,14 +109,23 @@ export default function AboutSection() {
               <div className="absolute inset-0 bg-brand-primary/20 mix-blend-multiply" />
             </div>
 
-            {/* FLOATING BADGE */}
-            <div className="absolute -bottom-8 -left-8 bg-brand-accent p-8 rounded-sm shadow-2xl hidden md:block border border-white">
-              <p className="font-syne font-black text-brand-primary text-4xl leading-none mb-1">
-                100%
+            {/* FLOATING AUTHENTICITY BADGE */}
+            <div className="absolute -bottom-8 -left-8 bg-brand-accent p-8 rounded-sm shadow-2xl border border-white max-w-55">
+              <p className="font-syne font-black text-brand-primary text-lg leading-none mb-3 uppercase">
+                Certified Original
               </p>
-              <p className="font-jakarta font-bold text-brand-primary/60 text-[9px] uppercase tracking-widest">
-                Natural Activators
-              </p>
+              <a
+                href="https://drive.google.com/file/d/14D9CeRenrudfB7nsNCvkhpv-YmIgcQ7i/view?usp=sharing"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 font-jakarta font-black text-brand-primary bg-white/40 px-3 py-2 rounded-sm text-[8px] uppercase tracking-widest hover:bg-white transition-all group/cta"
+              >
+                View Certificate
+                <ExternalLink
+                  size={10}
+                  className="group-hover/cta:translate-x-0.5 group-hover/cta:-translate-y-0.5 transition-transform"
+                />
+              </a>
             </div>
           </div>
         </div>
