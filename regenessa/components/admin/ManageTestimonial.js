@@ -134,9 +134,8 @@ export default function ManageTestimonials() {
               <Package size={18} />
             </div>
             <input
-              required
               placeholder="Product Name"
-              className="w-full p-4 pl-12 bg-brand-warm border-none font-syne text-sm uppercase font-bold focus:ring-1 focus:ring-brand-primary"
+              className="w-full p-4 pl-12 hidden bg-brand-warm border-none font-syne text-sm uppercase font-bold focus:ring-1 focus:ring-brand-primary"
               value={formData.regimenUsed}
               onChange={(e) =>
                 setFormData({ ...formData, regimenUsed: e.target.value })
@@ -221,7 +220,7 @@ export default function ManageTestimonials() {
                   )}
                 </div>
                 <div>
-                  <h4 className="font-syne font-bold text-sm uppercase tracking-tight text-brand-dark">
+                  <h4 className="font-syne hidden font-bold text-sm uppercase tracking-tight text-brand-dark">
                     {item.regimenUsed}
                   </h4>
                   <p className="text-[9px] font-black text-brand-primary uppercase tracking-[0.2em] mt-1 flex items-center gap-2">
