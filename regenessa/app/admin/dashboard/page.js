@@ -39,7 +39,7 @@ export default function AdminDashboard() {
   const [activeMenu, setActiveMenu] = useState("overview");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const ADMIN_EMAIL = "omoefe@regenessa.com";
+  const ADMIN_EMAIL = "patience@regenessa.com";
   const isAuthorized = user && user.email === ADMIN_EMAIL;
 
   useEffect(() => {
