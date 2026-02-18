@@ -3,7 +3,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import ProductCard from "@/components/productCard";
 import api from "@/lib/api";
-import { ChevronLeft, ChevronRight, Search, X, Filter } from "lucide-react";
+import { ChevronLeft, ChevronRight, Search, X } from "lucide-react";
 
 export default function ProductsPage() {
   const [products, setProducts] = useState([]);
@@ -13,7 +13,6 @@ export default function ProductsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 9;
 
-  // These can be dynamically fetched or hardcoded based on your "targetAilments"
   const concerns = [
     "All",
     "Anti-Aging",
@@ -44,17 +43,29 @@ export default function ProductsPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [currentPage]);
 
-  // Combined Filter Logic: Search + Concern
+  // Updated Filter Logic: Robust keyword matching for target ailments
+  // Updated Filter Logic: Handles both String and Array for targetAilments
   const filteredProducts = useMemo(() => {
     return products.filter((p) => {
-      const matchesSearch =
-        p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.shortDescription?.toLowerCase().includes(searchQuery.toLowerCase());
+      const searchLower = searchQuery.toLowerCase();
+      const concernLower = activeConcern.toLowerCase();
 
+      // 1. Basic Search Match
+      const matchesSearch =
+        p.name.toLowerCase().includes(searchLower) ||
+        p.shortDescription?.toLowerCase().includes(searchLower);
+
+      // 2. Advanced Concern Match (Checks Arrays or Strings)
       const matchesConcern =
         activeConcern === "All" ||
-        p.targetAilments?.includes(activeConcern) ||
-        p.category === activeConcern;
+        (Array.isArray(p.targetAilments)
+          ? // If it's an array, check if any item in the array matches the concern
+            p.targetAilments.some((ailment) =>
+              ailment.toLowerCase().includes(concernLower),
+            )
+          : // If it's a string, check normally
+            p.targetAilments?.toLowerCase().includes(concernLower)) ||
+        p.category?.toLowerCase() === concernLower;
 
       return matchesSearch && matchesConcern;
     });
