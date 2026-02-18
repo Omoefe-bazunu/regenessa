@@ -115,7 +115,7 @@ export default function AboutSection() {
                 Certified Original
               </p>
               <a
-                href="https://drive.google.com/file/d/14D9CeRenrudfB7nsNCvkhpv-YmIgcQ7i/view?usp=sharing"
+                href="https://drive.google.com/drive/folders/1Cak7XZm2doO1P0WWvWkm2nxBiCQukEZB?usp=sharing"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 font-jakarta font-black text-brand-primary bg-white/40 px-3 py-2 rounded-sm text-[8px] uppercase tracking-widest hover:bg-white transition-all group/cta"
