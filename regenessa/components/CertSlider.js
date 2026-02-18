@@ -10,7 +10,14 @@ export default function CertSlider() {
     const fetchCerts = async () => {
       try {
         const { data } = await api.get("/certifications");
-        setCerts(data);
+
+        // Sort by createdAt (Newest First)
+        // Swap 'b' and 'a' if you prefer Oldest First
+        const sortedCerts = data.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
+        );
+
+        setCerts(sortedCerts);
       } catch (err) {
         console.error("Failed to load trust assets", err);
       }
