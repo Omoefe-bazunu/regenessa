@@ -13,7 +13,7 @@ const ProductSection = () => {
     const fetchProducts = async () => {
       try {
         setIsLoading(true);
-        const response = await api.get("/products");
+        const response = await api.get("/featured-products"); // CHANGED
 
         if (Array.isArray(response.data)) {
           setProducts(response.data);
@@ -56,10 +56,6 @@ const ProductSection = () => {
           </Link>
         </div>
 
-        {/* GRID ADJUSTMENT: 
-           - Removed 'mx-auto' from cards via the grid alignment.
-           - Ensure grid items start from the leading edge.
-        */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 justify-items-start">
           {isLoading ? (
             [...Array(3)].map((_, i) => (
@@ -75,7 +71,7 @@ const ProductSection = () => {
               </p>
             </div>
           ) : products.length > 0 ? (
-            products.slice(0, 3).map((item) => (
+            products.map((item) => (
               <div key={item.id} className="w-full">
                 <ProductCard product={item} />
               </div>
@@ -83,7 +79,7 @@ const ProductSection = () => {
           ) : (
             <div className="col-span-full py-20 text-left border border-dashed border-foreground/10 px-6">
               <p className="font-jakarta text-sm text-foreground/40 uppercase tracking-widest">
-                No products found.
+                No featured products set.
               </p>
             </div>
           )}
