@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { BusIcon, ShipIcon, ShipWheelIcon } from "lucide-react";
+import { BusIcon } from "lucide-react";
 
 const DeliveryBar = () => {
   const pillars = [
@@ -14,7 +14,7 @@ const DeliveryBar = () => {
     <section className="bg-brand-accent py-10 border-y border-brand-primary/10 overflow-hidden transition-colors duration-500">
       <div className="relative flex items-center">
         {/* INFINITE MARQUEE WRAPPER */}
-        <div className="animate-marquee flex items-center">
+        <div className="animate-delivery flex items-center">
           {/* We render the set twice for a seamless loop */}
           {[...Array(2)].map((_, setIdx) => (
             <div key={`set-${setIdx}`} className="flex items-center">

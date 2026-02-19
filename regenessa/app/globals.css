@@ -104,6 +104,22 @@ h4,
   animation-play-state: paused;
 }
 
+/* --- INFINITE DELIVERY BAR ANIMATION --- */
+@keyframes delivery {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-delivery {
+  display: flex;
+  width: max-content;
+  animation: delivery 8s linear infinite;
+}
+
 /* --- PAGE TRANSITIONS & REVEALS --- */
 @keyframes fadeInUp {
   from {
