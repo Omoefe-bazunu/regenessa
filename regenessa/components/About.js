@@ -31,7 +31,7 @@ export default function AboutSection() {
   ];
 
   return (
-    <section className="py-16 bg-brand-primary transition-colors duration-500 overflow-hidden border-t border-slate-100">
+    <section className="py-16 bg-brand-primary transition-colors duration-500 overflow-hidden ">
       <div className="max-w-7xl mx-auto px-6 md:px-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           {/* LEFT: CONTENT AREA */}

@@ -1,6 +1,7 @@
 import AboutSection from "@/components/About";
 import CertSlider from "@/components/CertSlider";
 import ConsultationCTA from "@/components/ContactSection";
+import DeliveryBar from "@/components/Deliverybar";
 import FAQSection from "@/components/FaqSection";
 import Hero from "@/components/Hero";
 import ProductSection from "@/components/ProductSection";
@@ -14,7 +15,9 @@ function page() {
       <Hero />
       <WellnessBar />
       <ProductSection />
+      <DeliveryBar />
       <AboutSection />
+
       <CertSlider />
       <Reviews />
       <FAQSection />
