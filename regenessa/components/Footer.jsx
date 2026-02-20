@@ -160,12 +160,12 @@ const Footer = () => {
                 WhatsApp
               </span>
               <a
-                href="https://wa.me/2348029306720"
+                href="https://wa.me/2348142081020"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-xs font-bold text-white hover:text-[#4ade80] transition-colors"
               >
-                +234 (0) 8029306720
+                +234 (0) 8142081020
               </a>
             </div>
           </div>
@@ -200,4 +200,3 @@ const Footer = () => {
 };
 
 export default Footer;
-  
