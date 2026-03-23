@@ -66,7 +66,7 @@ export default function Navbar() {
     { name: "Packages", href: "/packages", icon: Package2Icon },
     { name: "Testimonials", href: "/testimonials", icon: Quote },
     { name: "Blog", href: "/blog", icon: PenIcon },
-    { name: "Orders", href: "/orders", icon: History },
+    { name: "Events", href: "/events", icon: History },
     { name: "Contact", href: "/contact", icon: PhoneCall },
   ];
 

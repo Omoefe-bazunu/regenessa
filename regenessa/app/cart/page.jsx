@@ -57,12 +57,20 @@ export default function CartPage() {
           <p className="text-foreground/60">
             Looks like you haven&apos;t added any bulk essentials yet.
           </p>
-          <Link
-            href="/products"
-            className="inline-block px-10 py-4 bg-brand-primary text-white rounded-2xl font-bold shadow-xl"
-          >
-            Browse Catalog
-          </Link>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link
+              href="/products"
+              className="inline-block px-10 py-4 bg-brand-primary text-white rounded-2xl font-bold shadow-xl"
+            >
+              Browse Catalog
+            </Link>
+            <Link
+              href="/orders"
+              className="inline-block px-10 py-4 border border-brand-primary text-brand-primary rounded-2xl font-bold hover:bg-brand-primary/5 transition-all"
+            >
+              View My Orders
+            </Link>
+          </div>
         </div>
       </main>
     );
@@ -221,6 +229,12 @@ export default function CartPage() {
             >
               <CreditCard size={20} />
               Proceed to Checkout
+            </Link>
+            <Link
+              href="/orders"
+              className="w-full mt-4 py-5 border border-brand-dark/10 text-brand-dark/60 rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-brand-dark/5 transition-all"
+            >
+              View My Orders
             </Link>
           </aside>
         </div>
