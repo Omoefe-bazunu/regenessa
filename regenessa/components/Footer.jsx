@@ -6,14 +6,27 @@ import {
   Phone,
   MapPin,
   Instagram,
-  Linkedin,
-  Twitter,
+  Facebook,
   ArrowUp,
   MessageCircle,
 } from "lucide-react";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+
+  // 🛠️ UPDATE YOUR SOCIAL LINKS HERE
+  const socialLinks = [
+    {
+      name: "Facebook",
+      href: "https://web.facebook.com/profile.php?id=100088677280433",
+      icon: Facebook,
+    },
+    {
+      name: "Instagram",
+      href: "https://www.instagram.com/theregenessa20/?hl=en",
+      icon: Instagram,
+    },
+  ];
 
   const footerLinks = [
     {
@@ -22,7 +35,6 @@ const Footer = () => {
         { name: "Products", href: "/products" },
         { name: "Packages", href: "/packages" },
         { name: "Testimonials", href: "/teestimonials" },
-
         { name: "Orders", href: "/orders" },
       ],
     },
@@ -57,13 +69,15 @@ const Footer = () => {
               cellular vitality and systemic longevity.
             </p>
             <div className="flex gap-4">
-              {[Instagram, Linkedin, Twitter].map((Icon, i) => (
+              {socialLinks.map((social, i) => (
                 <a
                   key={i}
-                  href="#"
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="p-3 rounded-xl border border-white/10 text-white/60 hover:text-[#fbbf24] hover:border-[#fbbf24] transition-all duration-300"
                 >
-                  <Icon size={18} />
+                  <social.icon size={18} />
                 </a>
               ))}
             </div>

@@ -15,14 +15,14 @@
 /* AUTOMATIC SYSTEM THEME SWITCH */
 @media (prefers-color-scheme: dark) {
   :root {
-    --brand-dark: #fffdfd; /* Pure White Headers */
-    --brand-primary: #011f13; /* Vibrant Green Accents */
+    --brand-dark: #fffdfd;
+    --brand-primary: #011f13;
     --brand-active: #fbbf24;
-    --brand-accent: #fbbf24; /* Amber Gold */
+    --brand-accent: #fbbf24;
     --brand-section: #011f13;
-    --brand-warm: #011f13; /* Deeper Forest Background */
-    --foreground: #fffdfd; /* Pure White Text for Contrast */
-    --border-color: #053d26; /* Deep Forest Borders */
+    --brand-warm: #011f13;
+    --foreground: #fffdfd;
+    --border-color: #053d26;
   }
 }
 
@@ -50,15 +50,14 @@ body {
   transition: background-color 0.4s ease, color 0.4s ease;
 }
 
+/* NOTE: Removed !important from heading color so blog prose styles work correctly */
 h1,
 h2,
 h3,
 h4,
 .font-heading {
   font-family: var(--font-syne), sans-serif;
-  color: var(
-    --brand-dark
-  ) !important; /* Will be White in dark mode, Charcoal in light */
+  color: var(--brand-dark);
   font-weight: 700;
   letter-spacing: -0.04em;
 }
@@ -67,7 +66,7 @@ h4,
   border-color: var(--border-color);
 }
 
-/* Add this to your globals.css */
+/* --- ANIMATIONS --- */
 @keyframes fadeUp {
   from {
     opacity: 0;
@@ -78,12 +77,10 @@ h4,
     transform: translateY(0);
   }
 }
-
 .animate-fade-up {
   animation: fadeUp 1s forwards;
 }
 
-/* --- INFINITE MARQUEE ANIMATION --- */
 @keyframes marquee {
   0% {
     transform: translateX(0);
@@ -92,19 +89,15 @@ h4,
     transform: translateX(-50%);
   }
 }
-
 .animate-marquee {
   display: flex;
   width: max-content;
   animation: marquee 40s linear infinite;
 }
-
-/* Pause on hover for readability */
 .animate-marquee:hover {
   animation-play-state: paused;
 }
 
-/* --- INFINITE DELIVERY BAR ANIMATION --- */
 @keyframes delivery {
   0% {
     transform: translateX(0);
@@ -113,14 +106,12 @@ h4,
     transform: translateX(-50%);
   }
 }
-
 .animate-delivery {
   display: flex;
   width: max-content;
   animation: delivery 8s linear infinite;
 }
 
-/* --- PAGE TRANSITIONS & REVEALS --- */
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -152,7 +143,6 @@ h4,
   animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* Staggered loading for the first 6 items */
 .animate-grid-item:nth-child(1) {
   animation-delay: 100ms;
 }
@@ -172,7 +162,6 @@ h4,
   animation-delay: 350ms;
 }
 
-/* --- TESTIMONIAL ANIMATIONS --- */
 @keyframes cardReveal {
   from {
     opacity: 0;
@@ -188,7 +177,6 @@ h4,
   opacity: 0;
   animation: cardReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
-
 .animate-testimonial-stagger > div:nth-child(1) {
   animation-delay: 100ms;
 }
@@ -203,31 +191,150 @@ h4,
   transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
     box-shadow 0.4s ease;
 }
-
 .hover-lift:hover {
   transform: translateY(-12px);
   box-shadow: 0 25px 50px -12px rgba(27, 67, 50, 0.15);
 }
 
-/* --- Infinite Marquee Animation for CERTIFICATION SECTION --- */
-/* --- Optimized Fast Marquee --- */
-/* --- Single Focus Marquee --- */
-/* --- Balanced Premium Marquee --- */
 @keyframes marquee-balanced {
   0% {
-    transform: translate3d(
-      50%,
-      0,
-      0
-    ); /* Start partially on-screen for immediate visibility */
+    transform: translate3d(50%, 0, 0);
   }
   100% {
-    transform: translate3d(-100%, 0, 0); /* Glide all the way out left */
+    transform: translate3d(-100%, 0, 0);
   }
 }
-
 .animate-marquee-balanced {
   display: flex;
   width: max-content;
-  animation: marquee-balanced 30s linear infinite; /* Smooth glide speed */
+  animation: marquee-balanced 30s linear infinite;
+}
+
+/* ─── BLOG CONTENT AREA ──────────────────────────────────────────────────────
+   Used in BlogDetailClient via className="blog-content-area mb-24"
+   Targets raw HTML injected via dangerouslySetInnerHTML from Quill editor.
+   Do NOT use Tailwind prose classes alongside this — they conflict.
+────────────────────────────────────────────────────────────────────────────── */
+.blog-content-area {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  contain: inline-size; /* ← replaces overflow-x: hidden */
+  font-family: var(--font-jakarta), sans-serif;
+  font-size: 1.125rem;
+  line-height: 1.8;
+  color: rgba(15, 23, 42, 0.8);
+  hyphens: none;
+  -webkit-hyphens: none;
+}
+
+.blog-content-area * {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.blog-content-area p {
+  margin-top: 0;
+  margin-bottom: 1.75rem;
+  line-height: 1.8;
+  color: rgba(15, 23, 42, 0.8);
+  overflow-wrap: break-word;
+  word-break: normal;
+  hyphens: none; /* ← ADD */
+  -webkit-hyphens: none; /* ← ADD */
+}
+
+.blog-content-area li {
+  margin-bottom: 0.75rem;
+  line-height: 1.8;
+  overflow-wrap: break-word;
+  word-break: normal;
+  hyphens: none; /* ← ADD */
+  -webkit-hyphens: none; /* ← ADD */
+}
+
+/* Quill outputs <p><br></p> for blank lines — hide them to avoid double spacing */
+.blog-content-area p:has(br:only-child) {
+  display: none;
+}
+
+.blog-content-area h2 {
+  font-family: var(--font-syne), sans-serif;
+  font-size: 1.875rem;
+  font-weight: 800;
+  color: var(--brand-dark) !important;
+  margin-top: 3rem;
+  margin-bottom: 1.25rem;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+.blog-content-area h3 {
+  font-family: var(--font-syne), sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--brand-dark) !important;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+}
+
+.blog-content-area a {
+  color: #2563eb !important;
+  font-weight: 600;
+  text-decoration: underline !important;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1.5px;
+  transition: color 0.2s ease;
+}
+
+.blog-content-area a:hover {
+  color: #1d4ed8 !important;
+}
+
+.blog-content-area strong {
+  font-weight: 900;
+  color: rgba(15, 23, 42, 1);
+}
+
+.blog-content-area em {
+  font-style: italic;
+  color: rgba(15, 23, 42, 0.7);
+}
+
+.blog-content-area ul,
+.blog-content-area ol {
+  padding-left: 1.5rem;
+  margin-bottom: 1.75rem;
+}
+
+.blog-content-area ul {
+  list-style-type: disc;
+}
+
+.blog-content-area ol {
+  list-style-type: decimal;
+}
+
+.blog-content-area li {
+  margin-bottom: 0.75rem;
+  line-height: 1.8;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
+.blog-content-area blockquote {
+  border-left: 4px solid var(--brand-accent);
+  padding-left: 1.25rem;
+  margin: 2rem 0;
+  font-style: italic;
+  color: rgba(15, 23, 42, 0.6);
+}
+
+.blog-content-area img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin: 1.5rem 0;
 }

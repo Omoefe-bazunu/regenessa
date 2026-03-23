@@ -87,7 +87,7 @@ export default function Testimonials() {
             Home
           </Link>
           <span className="">|</span>
-          <span className="text-brand-dark">Visual Registry</span>
+          <span className="text-brand-dark">Testimonials</span>
         </nav>
 
         {/* HEADER & TABS */}

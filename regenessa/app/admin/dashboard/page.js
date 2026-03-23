@@ -24,6 +24,9 @@ import {
   Package2Icon,
   CircleQuestionMark,
   Star,
+  PenIcon,
+  Image,
+  HomeIcon,
 } from "lucide-react";
 import AdminReviews from "@/components/admin/ManageReviews";
 import ProductAnalytics from "@/components/admin/products-analytics";
@@ -31,6 +34,8 @@ import ManagePackages from "@/components/admin/ManagePackages";
 import ManageCerts from "@/components/admin/ManageCerts";
 import ManageFAQs from "@/components/admin/ManageFAQs";
 import ManageFeaturedProducts from "@/components/admin/ManageFeaturerdProducts";
+import BlogAdminDashboard from "@/components/admin/blog/Blog";
+import EventsAdmin from "@/components/admin/Events/EventManager";
 
 export default function AdminDashboard() {
   const { user, loading: authLoading } = useAuth();
@@ -63,6 +68,8 @@ export default function AdminDashboard() {
     { id: "faqs", label: "faqs", icon: CircleQuestionMark },
     { id: "analytics", label: "Analytics", icon: ChartAreaIcon },
     { id: "featured", label: "Featured Products", icon: Star },
+    { id: "blog", label: "Blog", icon: PenIcon },
+    { id: "events", label: "Events", icon: HomeIcon },
   ];
 
   const handleMenuClick = (id) => {
@@ -177,6 +184,8 @@ export default function AdminDashboard() {
             {activeMenu === "faqs" && <ManageFAQs />}
             {activeMenu === "analytics" && <ProductAnalytics />}
             {activeMenu === "featured" && <ManageFeaturedProducts />}
+            {activeMenu === "blog" && <BlogAdminDashboard />}
+            {activeMenu === "events" && <EventsAdmin />}
           </div>
         </main>
       </div>
