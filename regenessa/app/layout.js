@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Toaster } from "react-hot-toast";
 import { ThemeProvider } from "@/context/ThemeContext";
+import Script from "next/script"; // 🛠️ Added for Tawk.to integration
 // import WhatsAppWidget from "@/components/WhatsAppWidget";
 
 const syne = Syne({
@@ -67,6 +68,21 @@ export default function RootLayout({ children }) {
               <main className="min-h-screen">{children}</main>
               <Footer />
               {/* <WhatsAppWidget /> */}
+
+              {/* Tawk.to Live Chat Script */}
+              <Script id="tawk-to" strategy="afterInteractive">
+                {`
+                  var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+                  (function(){
+                  var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+                  s1.async=true;
+                  s1.src='https://embed.tawk.to/69dd0d846b02011c3618125b/default';
+                  s1.charset='UTF-8';
+                  s1.setAttribute('crossorigin','*');
+                  s0.parentNode.insertBefore(s1,s0);
+                  })();
+                `}
+              </Script>
             </CartProvider>
           </AuthProvider>
         </ThemeProvider>

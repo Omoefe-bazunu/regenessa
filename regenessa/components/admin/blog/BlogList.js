@@ -32,7 +32,7 @@ export default function BlogAdminList({ onEdit }) {
   const handleDelete = async (id) => {
     if (
       window.confirm(
-        "Are you sure? This will permanently remove this health insight.",
+        "Are you sure? This will permanently remove this health Blog.",
       )
     ) {
       try {
